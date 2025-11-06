@@ -58,7 +58,7 @@ export default function WorkoutTracker({ exerciseType }: WorkoutTrackerProps) {
       stream.getTracks().forEach((track) => track.stop());
       videoRef.current.srcObject = null;
     }
-    setHasCameraPermission(false);
+    setHasCameraPermission(null);
     setIsTracking(false);
   };
 
@@ -105,6 +105,9 @@ export default function WorkoutTracker({ exerciseType }: WorkoutTrackerProps) {
   };
 
   const toggleTracking = () => {
+    if (isTracking) {
+      stopCamera();
+    }
     setIsTracking((prev) => !prev);
   };
 
@@ -113,13 +116,15 @@ export default function WorkoutTracker({ exerciseType }: WorkoutTrackerProps) {
       <Card className="overflow-hidden">
         <CardContent className="p-0">
           <div className="relative aspect-video bg-muted flex items-center justify-center">
-            <video
-              ref={videoRef}
-              autoPlay
-              playsInline
-              muted
-              className={`h-full w-full object-cover ${hasCameraPermission ? 'block' : 'hidden'}`}
-            />
+             {hasCameraPermission && (
+                <video
+                    ref={videoRef}
+                    autoPlay
+                    playsInline
+                    muted
+                    className="h-full w-full object-cover"
+                />
+             )}
             {hasCameraPermission === false && (
               <Alert variant="destructive" className="m-4">
                 <AlertTitle>Camera Access Required</AlertTitle>
@@ -182,7 +187,7 @@ export default function WorkoutTracker({ exerciseType }: WorkoutTrackerProps) {
       </div>
 
        <div className="mt-4 flex justify-end">
-          <Button variant="outline" onClick={stopCamera} disabled={!hasCameraPermission}>Turn Off Camera</Button>
+          <Button variant="outline" onClick={stopCamera} disabled={!isTracking && hasCameraPermission === null}>Turn Off Camera</Button>
        </div>
     </div>
   );

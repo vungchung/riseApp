@@ -6,6 +6,9 @@ export type UserProfile = {
   rank: 'E' | 'D' | 'C' | 'B' | 'A' | 'S';
   xp: number;
   xpToNextLevel: number;
+  height?: number; // in cm
+  weight?: number; // in kg
+  gender?: 'male' | 'female' | 'other';
 };
 
 export type Quest = {

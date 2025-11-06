@@ -1,3 +1,6 @@
+'use client';
+
+import { useState, useEffect } from 'react';
 import { PageHeader } from '@/components/page-header';
 import {
   Card,
@@ -6,7 +9,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { dailyQuest, dungeons, userProfile } from '@/lib/data';
+import { dailyQuest, dungeons, userProfile as initialProfile } from '@/lib/data';
 import { Check, Swords } from 'lucide-react';
 import { XpBar } from '@/components/xp-bar';
 import Image from 'next/image';
@@ -15,6 +18,9 @@ import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { cn } from '@/lib/utils';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
+import { UserProfileSetup } from '@/components/profile/user-profile-setup';
+import type { UserProfile } from '@/lib/types';
+
 
 function getRankColor(rank: 'E' | 'D' | 'C' | 'B' | 'A' | 'S') {
   switch (rank) {
@@ -29,10 +35,31 @@ function getRankColor(rank: 'E' | 'D' | 'C' | 'B' | 'A' | 'S') {
 }
 
 export default function DashboardPage() {
+  const [userProfile, setUserProfile] = useState<UserProfile>(initialProfile);
+  const [isSetupOpen, setIsSetupOpen] = useState(false);
+
+  useEffect(() => {
+    // A simple check to see if the user has provided their details.
+    // In a real app, this would be persisted.
+    if (!userProfile.height || !userProfile.weight || !userProfile.gender) {
+      setIsSetupOpen(true);
+    }
+  }, [userProfile]);
+
+  const handleProfileSave = (data: Partial<UserProfile>) => {
+    setUserProfile(prev => ({ ...prev, ...data }));
+  };
+
   const avatarImage = PlaceHolderImages.find(img => img.id === 'avatar');
   
   return (
     <div className="container mx-auto p-4 sm:p-6 lg:p-8">
+      <UserProfileSetup
+        userProfile={userProfile}
+        onSave={handleProfileSave}
+        open={isSetupOpen}
+        onOpenChange={setIsSetupOpen}
+      />
       <PageHeader
         title="Dashboard"
         description="Your journey to become an S-Rank Hunter starts now."

@@ -37,20 +37,46 @@ function getRankColor(rank: 'E' | 'D' | 'C' | 'B' | 'A' | 'S') {
 export default function DashboardPage() {
   const [userProfile, setUserProfile] = useState<UserProfile>(initialProfile);
   const [isSetupOpen, setIsSetupOpen] = useState(false);
+  const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
-    // A simple check to see if the user has provided their details.
-    // In a real app, this would be persisted.
-    if (!userProfile.height || !userProfile.weight || !userProfile.gender) {
-      setIsSetupOpen(true);
+    setIsClient(true);
+    try {
+      const savedProfile = localStorage.getItem('userProfile');
+      if (savedProfile) {
+        const profileData = JSON.parse(savedProfile);
+        setUserProfile(profileData);
+        if (!profileData.height || !profileData.weight || !profileData.gender) {
+          setIsSetupOpen(true);
+        }
+      } else {
+        localStorage.setItem('userProfile', JSON.stringify(initialProfile));
+        setIsSetupOpen(true);
+      }
+    } catch (error) {
+      console.error("Failed to access localStorage:", error);
+      // Fallback for environments where localStorage is not available
+       if (!userProfile.height || !userProfile.weight || !userProfile.gender) {
+        setIsSetupOpen(true);
+      }
     }
-  }, [userProfile]);
+  }, []);
 
   const handleProfileSave = (data: Partial<UserProfile>) => {
-    setUserProfile(prev => ({ ...prev, ...data }));
+    const newProfile = { ...userProfile, ...data };
+    setUserProfile(newProfile);
+    try {
+      localStorage.setItem('userProfile', JSON.stringify(newProfile));
+    } catch (error) {
+       console.error("Failed to save to localStorage:", error);
+    }
   };
 
   const avatarImage = PlaceHolderImages.find(img => img.id === 'avatar');
+
+  if (!isClient) {
+    return null; // or a loading spinner
+  }
   
   return (
     <div className="container mx-auto p-4 sm:p-6 lg:p-8">

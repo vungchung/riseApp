@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { PageHeader } from '@/components/page-header';
 import { userProfile as initialProfile, badges } from '@/lib/data';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
@@ -40,11 +40,36 @@ function getRankColor(rank: 'E' | 'D' | 'C' | 'B' | 'A' | 'S') {
 export default function ProfilePage() {
   const [userProfile, setUserProfile] = useState<UserProfile>(initialProfile);
   const [isSetupOpen, setIsSetupOpen] = useState(false);
+  const [isClient, setIsClient] = useState(false);
   const avatarImage = PlaceHolderImages.find((img) => img.id === 'avatar');
 
+  useEffect(() => {
+    setIsClient(true);
+    try {
+      const savedProfile = localStorage.getItem('userProfile');
+      if (savedProfile) {
+        setUserProfile(JSON.parse(savedProfile));
+      } else {
+        localStorage.setItem('userProfile', JSON.stringify(initialProfile));
+      }
+    } catch (error) {
+      console.error("Failed to access localStorage:", error);
+    }
+  }, []);
+
   const handleProfileSave = (data: Partial<UserProfile>) => {
-    setUserProfile((prev) => ({ ...prev, ...data }));
+    const newProfile = { ...userProfile, ...data };
+    setUserProfile(newProfile);
+    try {
+      localStorage.setItem('userProfile', JSON.stringify(newProfile));
+    } catch (error) {
+      console.error("Failed to save to localStorage:", error);
+    }
   };
+
+  if (!isClient) {
+    return null; // Or a loading spinner
+  }
   
   return (
     <div className="container mx-auto p-4 sm:p-6 lg:p-8">

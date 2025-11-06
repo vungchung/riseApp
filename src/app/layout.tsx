@@ -4,6 +4,7 @@ import { cn } from '@/lib/utils';
 import { Toaster } from '@/components/ui/toaster';
 import { AppSidebar } from '@/components/app-sidebar';
 import { SidebarProvider } from '@/components/ui/sidebar';
+import { ClientOnly } from '@/components/client-only';
 
 export const metadata: Metadata = {
   title: "RISE: Hunter's Ascent",
@@ -32,7 +33,9 @@ export default function RootLayout({
       >
         <SidebarProvider>
           <div className="flex">
-            <AppSidebar />
+            <ClientOnly>
+              <AppSidebar />
+            </ClientOnly>
             <main className="flex-1 min-w-0">{children}</main>
           </div>
         </SidebarProvider>

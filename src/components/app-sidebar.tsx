@@ -1,3 +1,4 @@
+
 'use client';
 
 import Link from 'next/link';
@@ -53,10 +54,10 @@ export function AppSidebar() {
                   )}
                   asChild
                 >
-                  <>
+                  <div className="flex items-center">
                     <item.icon className="h-5 w-5 mr-3" />
                     <span>{item.label}</span>
-                  </>
+                  </div>
                 </SidebarMenuButton>
               </Link>
             </SidebarMenuItem>

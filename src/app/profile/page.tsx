@@ -1,8 +1,8 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { PageHeader } from '@/components/page-header';
-import { userProfile as initialProfile, badges } from '@/lib/data';
+import { badges } from '@/lib/data';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
@@ -17,6 +17,7 @@ import { Download, Edit } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { UserProfileSetup } from '@/components/profile/user-profile-setup';
 import type { UserProfile } from '@/lib/types';
+import { useGame } from '@/components/providers/game-provider';
 
 function getRankColor(rank: 'E' | 'D' | 'C' | 'B' | 'A' | 'S') {
   switch (rank) {
@@ -38,36 +39,15 @@ function getRankColor(rank: 'E' | 'D' | 'C' | 'B' | 'A' | 'S') {
 }
 
 export default function ProfilePage() {
-  const [userProfile, setUserProfile] = useState<UserProfile>(initialProfile);
+  const { userProfile, updateUserProfile } = useGame();
   const [isSetupOpen, setIsSetupOpen] = useState(false);
-  const [isClient, setIsClient] = useState(false);
   const avatarImage = PlaceHolderImages.find((img) => img.id === 'avatar');
 
-  useEffect(() => {
-    setIsClient(true);
-    try {
-      const savedProfile = localStorage.getItem('userProfile');
-      if (savedProfile) {
-        setUserProfile(JSON.parse(savedProfile));
-      } else {
-        localStorage.setItem('userProfile', JSON.stringify(initialProfile));
-      }
-    } catch (error) {
-      console.error("Failed to access localStorage:", error);
-    }
-  }, []);
-
   const handleProfileSave = (data: Partial<UserProfile>) => {
-    const newProfile = { ...userProfile, ...data };
-    setUserProfile(newProfile);
-    try {
-      localStorage.setItem('userProfile', JSON.stringify(newProfile));
-    } catch (error) {
-      console.error("Failed to save to localStorage:", error);
-    }
+    updateUserProfile(data);
   };
-
-  if (!isClient) {
+  
+  if (!userProfile) {
     return null; // Or a loading spinner
   }
   

@@ -9,8 +9,8 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { dailyQuest, dungeons, userProfile as initialProfile } from '@/lib/data';
-import { Check, Swords } from 'lucide-react';
+import { dungeons } from '@/lib/data';
+import { Swords } from 'lucide-react';
 import { XpBar } from '@/components/xp-bar';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -20,6 +20,8 @@ import { cn } from '@/lib/utils';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { UserProfileSetup } from '@/components/profile/user-profile-setup';
 import type { UserProfile } from '@/lib/types';
+import { useGame } from '@/components/providers/game-provider';
+import QuestsOverview from '@/components/quests-overview';
 
 
 function getRankColor(rank: 'E' | 'D' | 'C' | 'B' | 'A' | 'S') {
@@ -35,46 +37,22 @@ function getRankColor(rank: 'E' | 'D' | 'C' | 'B' | 'A' | 'S') {
 }
 
 export default function DashboardPage() {
-  const [userProfile, setUserProfile] = useState<UserProfile>(initialProfile);
+  const { userProfile, quests, updateUserProfile } = useGame();
   const [isSetupOpen, setIsSetupOpen] = useState(false);
-  const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
-    setIsClient(true);
-    try {
-      const savedProfile = localStorage.getItem('userProfile');
-      if (savedProfile) {
-        const profileData = JSON.parse(savedProfile);
-        setUserProfile(profileData);
-        if (!profileData.height || !profileData.weight || !profileData.gender) {
-          setIsSetupOpen(true);
-        }
-      } else {
-        localStorage.setItem('userProfile', JSON.stringify(initialProfile));
+    if (userProfile && (!userProfile.height || !userProfile.weight || !userProfile.gender)) {
         setIsSetupOpen(true);
-      }
-    } catch (error) {
-      console.error("Failed to access localStorage:", error);
-      // Fallback for environments where localStorage is not available
-       if (!userProfile.height || !userProfile.weight || !userProfile.gender) {
-        setIsSetupOpen(true);
-      }
     }
-  }, []);
+  }, [userProfile]);
 
   const handleProfileSave = (data: Partial<UserProfile>) => {
-    const newProfile = { ...userProfile, ...data };
-    setUserProfile(newProfile);
-    try {
-      localStorage.setItem('userProfile', JSON.stringify(newProfile));
-    } catch (error) {
-       console.error("Failed to save to localStorage:", error);
-    }
+    updateUserProfile(data);
   };
 
   const avatarImage = PlaceHolderImages.find(img => img.id === 'avatar');
 
-  if (!isClient) {
+  if (!userProfile) {
     return null; // or a loading spinner
   }
   
@@ -115,33 +93,15 @@ export default function DashboardPage() {
       </div>
 
       <section className="mb-8">
-        <h2 className="text-2xl font-headline mb-4">Daily Quest</h2>
-        <Card className="border-primary glow-primary">
-          <CardHeader>
-            <CardTitle className="font-headline">{dailyQuest.title}</CardTitle>
-            <CardDescription>{dailyQuest.description}</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <ul className="space-y-2">
-              {dailyQuest.tasks.map((task, index) => (
-                <li key={index} className="flex items-center gap-3">
-                  <Check
-                    className={`h-5 w-5 ${
-                      task.completed ? 'text-accent' : 'text-muted-foreground'
-                    }`}
-                  />
-                  <span>{task.description}</span>
-                </li>
-              ))}
-            </ul>
-            <Button className="mt-4 w-full sm:w-auto" variant="secondary" asChild>
+        <div className="flex justify-between items-center mb-4">
+            <h2 className="text-2xl font-headline">Active Quests</h2>
+            <Button variant="ghost" asChild>
                 <Link href="/quests">
-                    <Swords className="mr-2 h-4 w-4"/>
-                    Start Mandatory Quest
+                    View All
                 </Link>
             </Button>
-          </CardContent>
-        </Card>
+        </div>
+        <QuestsOverview quests={quests} />
       </section>
 
       <section>

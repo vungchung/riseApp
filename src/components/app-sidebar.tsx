@@ -1,5 +1,3 @@
-
-
 'use client';
 
 import Link from 'next/link';
@@ -14,12 +12,11 @@ import {
   SidebarFooter,
 } from '@/components/ui/sidebar';
 import { AppLogo } from '@/components/icons';
-import { Button } from '@/components/ui/button';
-import { BarChart3, Flame, LayoutGrid, LogOut, Swords, User } from 'lucide-react';
+import { BarChart3, Flame, LayoutGrid, Swords, User } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { userProfile } from '@/lib/data';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
+import { useGame } from '@/components/providers/game-provider';
 
 const navItems = [
   { href: '/', label: 'Dashboard', icon: LayoutGrid },
@@ -31,6 +28,7 @@ const navItems = [
 
 export function AppSidebar() {
   const pathname = usePathname();
+  const { userProfile } = useGame();
   const avatarImage = PlaceHolderImages.find(img => img.id === 'avatar');
 
   return (
@@ -66,20 +64,22 @@ export function AppSidebar() {
           ))}
         </SidebarMenu>
       </SidebarContent>
-      <SidebarFooter className="p-4">
-        <Link href="/profile">
-            <div className="flex items-center gap-3 p-2 rounded-lg hover:bg-muted">
-                <Avatar className="h-10 w-10 border-2 border-accent">
-                    {avatarImage && <AvatarImage src={avatarImage.imageUrl} alt={userProfile.name} />}
-                    <AvatarFallback>{userProfile.name.charAt(0)}</AvatarFallback>
-                </Avatar>
-                <div>
-                    <p className="font-semibold">{userProfile.name}</p>
-                    <p className="text-xs text-muted-foreground">Level {userProfile.level}</p>
+     {userProfile && (
+        <SidebarFooter className="p-4">
+            <Link href="/profile">
+                <div className="flex items-center gap-3 p-2 rounded-lg hover:bg-muted">
+                    <Avatar className="h-10 w-10 border-2 border-accent">
+                        {avatarImage && <AvatarImage src={avatarImage.imageUrl} alt={userProfile.name} />}
+                        <AvatarFallback>{userProfile.name.charAt(0)}</AvatarFallback>
+                    </Avatar>
+                    <div>
+                        <p className="font-semibold">{userProfile.name}</p>
+                        <p className="text-xs text-muted-foreground">Level {userProfile.level}</p>
+                    </div>
                 </div>
-            </div>
-        </Link>
-      </SidebarFooter>
+            </Link>
+        </SidebarFooter>
+     )}
     </Sidebar>
   );
 }

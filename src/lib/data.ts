@@ -1,29 +1,28 @@
 import type { UserProfile, Quest, Dungeon, Badge, Analytics } from './types';
-import { Award, Shield, Star, Crown, Zap, Swords, Dumbbell, Repeat } from 'lucide-react';
+import { Award, Shield, Star, Crown, Zap } from 'lucide-react';
+import { MANDATORY_QUEST_ID } from './constants';
 
 export const userProfile: UserProfile = {
   name: 'Hunter',
   level: 1,
   rank: 'E',
-  xp: 50,
+  xp: 0,
   xpToNextLevel: 200,
 };
 
-export const dailyQuest: Quest = {
-  id: 'daily-quest',
-  title: 'Daily Quest: Path to Power',
-  description: 'Complete these tasks to gain daily experience and become stronger.',
-  xp: 100,
-  tasks: [
-    { description: '100 Push-ups', completed: true },
-    { description: '100 Sit-ups', completed: true },
-    { description: '100 Squats', completed: false },
-    { description: '10km Run', completed: false },
-  ],
-};
-
-export const quests: Quest[] = [
-    dailyQuest,
+export const MOCK_QUESTS: Quest[] = [
+    {
+      id: MANDATORY_QUEST_ID,
+      title: 'Daily Quest: Path to Power',
+      description: 'Complete these tasks to gain daily experience and become stronger. This quest resets daily.',
+      xp: 100,
+      tasks: [
+        { description: '100 Push-ups', completed: false },
+        { description: '100 Sit-ups', completed: false },
+        { description: '100 Squats', completed: false },
+        { description: '10km Run', completed: false },
+      ],
+    },
     {
         id: 'strength-1',
         title: 'Beginner Strength Training',
@@ -45,6 +44,27 @@ export const quests: Quest[] = [
             { description: '30 minutes of Jogging', completed: false },
             { description: '5x1 minute High Knees', completed: false },
             { description: '5x30 Jumping Jacks', completed: false },
+        ]
+    },
+    {
+        id: 'strength-2',
+        title: 'Advanced Upper Body',
+        description: 'Push your upper body to its limits.',
+        xp: 200,
+        tasks: [
+            { description: '5x20 Pull-ups', completed: false },
+            { description: '5x25 Dips', completed: false },
+            { description: '3x15 Overhead Press', completed: false },
+        ]
+    },
+    {
+        id: 'cardio-2',
+        title: 'High-Intensity Interval Training',
+        description: 'A quick and intense workout to maximize calorie burn.',
+        xp: 180,
+        tasks: [
+            { description: '20 minutes of HIIT (30s on, 30s off)', completed: false },
+            { description: '5 sets of Burpees to failure', completed: false },
         ]
     }
 ];

@@ -2,11 +2,12 @@
 
 import { useState, useRef, useEffect, useTransition } from 'react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader } from '@/components/ui/card';
 import { performPoseEstimation, PoseEstimationOutput } from '@/ai/flows/pose-estimation-rep-counting';
 import { Alert, AlertDescription, AlertTitle } from '../ui/alert';
 import { Terminal } from 'lucide-react';
 import { Skeleton } from '../ui/skeleton';
+import { useToast } from '@/hooks/use-toast';
 
 type WorkoutTrackerProps = {
   exerciseType: string;
@@ -15,25 +16,41 @@ type WorkoutTrackerProps = {
 export default function WorkoutTracker({ exerciseType }: WorkoutTrackerProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const [isCameraOn, setIsCameraOn] = useState(false);
+  const [hasCameraPermission, setHasCameraPermission] = useState<boolean | null>(null);
   const [isTracking, setIsTracking] = useState(false);
   const [result, setResult] = useState<PoseEstimationOutput | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
+  const { toast } = useToast();
 
-  const startCamera = async () => {
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } });
-      if (videoRef.current) {
-        videoRef.current.srcObject = stream;
+  useEffect(() => {
+    const getCameraPermission = async () => {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } });
+        setHasCameraPermission(true);
+
+        if (videoRef.current) {
+          videoRef.current.srcObject = stream;
+        }
+      } catch (error) {
+        console.error('Error accessing camera:', error);
+        setHasCameraPermission(false);
+        toast({
+          variant: 'destructive',
+          title: 'Camera Access Denied',
+          description: 'Please enable camera permissions in your browser settings to use this app.',
+        });
       }
-      setIsCameraOn(true);
-      setError(null);
-    } catch (err) {
-      console.error('Error accessing camera:', err);
-      setError('Could not access camera. Please check permissions and try again.');
+    };
+
+    if (isTracking) {
+        if (hasCameraPermission === null || !hasCameraPermission) {
+            getCameraPermission();
+        }
     }
-  };
+
+  }, [isTracking, hasCameraPermission, toast]);
+
 
   const stopCamera = () => {
     if (videoRef.current && videoRef.current.srcObject) {
@@ -41,7 +58,7 @@ export default function WorkoutTracker({ exerciseType }: WorkoutTrackerProps) {
       stream.getTracks().forEach((track) => track.stop());
       videoRef.current.srcObject = null;
     }
-    setIsCameraOn(false);
+    setHasCameraPermission(false);
     setIsTracking(false);
   };
 
@@ -51,13 +68,13 @@ export default function WorkoutTracker({ exerciseType }: WorkoutTrackerProps) {
 
   useEffect(() => {
     let intervalId: NodeJS.Timeout;
-    if (isTracking) {
+    if (isTracking && hasCameraPermission) {
       intervalId = setInterval(() => {
         captureFrameAndEstimate();
       }, 2000); // Capture frame every 2 seconds
     }
     return () => clearInterval(intervalId);
-  }, [isTracking]);
+  }, [isTracking, hasCameraPermission]);
 
   const captureFrameAndEstimate = () => {
     if (!videoRef.current || !canvasRef.current) return;
@@ -88,13 +105,7 @@ export default function WorkoutTracker({ exerciseType }: WorkoutTrackerProps) {
   };
 
   const toggleTracking = () => {
-    if (!isCameraOn) {
-        startCamera().then(() => {
-            setIsTracking(true);
-        })
-    } else {
-        setIsTracking(!isTracking);
-    }
+    setIsTracking((prev) => !prev);
   };
 
   return (
@@ -107,13 +118,20 @@ export default function WorkoutTracker({ exerciseType }: WorkoutTrackerProps) {
               autoPlay
               playsInline
               muted
-              className={`h-full w-full object-cover ${isCameraOn ? 'block' : 'hidden'}`}
+              className={`h-full w-full object-cover ${hasCameraPermission ? 'block' : 'hidden'}`}
             />
-            {!isCameraOn && (
-              <div className="text-center text-muted-foreground">
-                <p>Camera is off</p>
-                <Button variant="link" onClick={startCamera}>Turn on camera to begin</Button>
-              </div>
+            {hasCameraPermission === false && (
+              <Alert variant="destructive" className="m-4">
+                <AlertTitle>Camera Access Required</AlertTitle>
+                <AlertDescription>
+                  Please allow camera access to use this feature.
+                </AlertDescription>
+              </Alert>
+            )}
+            {hasCameraPermission === null && (
+                <div className="text-center text-muted-foreground">
+                    <p>Camera is off</p>
+                </div>
             )}
              {isTracking && isPending && (
                 <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
@@ -164,7 +182,7 @@ export default function WorkoutTracker({ exerciseType }: WorkoutTrackerProps) {
       </div>
 
        <div className="mt-4 flex justify-end">
-          <Button variant="outline" onClick={stopCamera} disabled={!isCameraOn}>Turn Off Camera</Button>
+          <Button variant="outline" onClick={stopCamera} disabled={!hasCameraPermission}>Turn Off Camera</Button>
        </div>
     </div>
   );

@@ -1,5 +1,5 @@
 import type { UserProfile, Quest, Dungeon, Badge, Analytics } from './types';
-import { Award, Shield, Star, Crown, Zap } from 'lucide-react';
+import { Award, Shield, Star, Crown, Zap, Swords, Dumbbell, Repeat } from 'lucide-react';
 
 export const userProfile: UserProfile = {
   name: 'Hunter',
@@ -10,6 +10,7 @@ export const userProfile: UserProfile = {
 };
 
 export const dailyQuest: Quest = {
+  id: 'daily-quest',
   title: 'Daily Quest: Path to Power',
   description: 'Complete these tasks to gain daily experience and become stronger.',
   xp: 100,
@@ -20,6 +21,33 @@ export const dailyQuest: Quest = {
     { description: '10km Run', completed: false },
   ],
 };
+
+export const quests: Quest[] = [
+    dailyQuest,
+    {
+        id: 'strength-1',
+        title: 'Beginner Strength Training',
+        description: 'Focus on building a solid foundation of strength.',
+        xp: 150,
+        tasks: [
+            { description: '3x10 Push-ups', completed: false },
+            { description: '3x15 Squats', completed: false },
+            { description: '3x12 Lunges (each leg)', completed: false },
+            { description: '1-minute Plank', completed: false },
+        ]
+    },
+    {
+        id: 'cardio-1',
+        title: 'Endurance Protocol',
+        description: 'Improve your stamina and cardiovascular health.',
+        xp: 120,
+        tasks: [
+            { description: '30 minutes of Jogging', completed: false },
+            { description: '5x1 minute High Knees', completed: false },
+            { description: '5x30 Jumping Jacks', completed: false },
+        ]
+    }
+];
 
 export const dungeons: Dungeon[] = [
   {

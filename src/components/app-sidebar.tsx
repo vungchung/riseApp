@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import Link from 'next/link';
@@ -14,7 +15,7 @@ import {
 } from '@/components/ui/sidebar';
 import { AppLogo } from '@/components/icons';
 import { Button } from '@/components/ui/button';
-import { BarChart3, Flame, LayoutGrid, LogOut, User } from 'lucide-react';
+import { BarChart3, Flame, LayoutGrid, LogOut, Swords, User } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { userProfile } from '@/lib/data';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
@@ -22,7 +23,8 @@ import { PlaceHolderImages } from '@/lib/placeholder-images';
 
 const navItems = [
   { href: '/', label: 'Dashboard', icon: LayoutGrid },
-  { href: '/workout-session', label: 'Workout Session', icon: Flame },
+  { href: '/quests', label: 'Quests', icon: Swords },
+  { href: '/tracker', label: 'Tracker', icon: Flame },
   { href: '/profile', label: 'Profile', icon: User },
   { href: '/analytics', label: 'Analytics', icon: BarChart3 },
 ];

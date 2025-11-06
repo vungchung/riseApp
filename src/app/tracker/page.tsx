@@ -1,12 +1,13 @@
+
 import { PageHeader } from '@/components/page-header';
 import WorkoutTracker from '@/components/workout/workout-tracker';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 
-export default function WorkoutSessionPage() {
+export default function TrackerPage() {
   return (
     <div className="container mx-auto p-4 sm:p-6 lg:p-8">
       <PageHeader
-        title="Workout Session"
+        title="Workout Tracker"
         description="Engage in combat training. The system will monitor your performance."
       />
       <Card>

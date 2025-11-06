@@ -12,6 +12,7 @@ export type UserProfile = {
 };
 
 export type Quest = {
+  id: string;
   title: string;
   description: string;
   xp: number;

@@ -135,7 +135,7 @@ export default function DashboardPage() {
               ))}
             </ul>
             <Button className="mt-4 w-full sm:w-auto" variant="secondary" asChild>
-                <Link href="/workout-session">
+                <Link href="/quests">
                     <Swords className="mr-2 h-4 w-4"/>
                     Start Mandatory Quest
                 </Link>

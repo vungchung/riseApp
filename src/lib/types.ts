@@ -1,0 +1,39 @@
+import type { LucideIcon } from 'lucide-react';
+
+export type UserProfile = {
+  name: string;
+  level: number;
+  rank: 'E' | 'D' | 'C' | 'B' | 'A' | 'S';
+  xp: number;
+  xpToNextLevel: number;
+};
+
+export type Quest = {
+  title: string;
+  description: string;
+  xp: number;
+  tasks: { description: string; completed: boolean }[];
+};
+
+export type Dungeon = {
+  id: string;
+  title: string;
+  description:string;
+  duration: number; // in days
+  difficulty: 'Beginner' | 'Intermediate' | 'Advanced';
+};
+
+export type Badge = {
+  id: string;
+  name: string;
+  description: string;
+  Icon: LucideIcon;
+};
+
+export type Analytics = {
+  totalWorkouts: number;
+  currentStreak: number;
+  hoursTrained: number;
+  weeklyActivity: { day: string; workouts: number }[];
+  personalRecords: { exercise: string; value: string }[];
+};

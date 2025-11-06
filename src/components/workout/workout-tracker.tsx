@@ -8,6 +8,7 @@ import { Alert, AlertDescription, AlertTitle } from '../ui/alert';
 import { Terminal } from 'lucide-react';
 import { Skeleton } from '../ui/skeleton';
 import { useToast } from '@/hooks/use-toast';
+import { cn } from '@/lib/utils';
 
 type WorkoutTrackerProps = {
   exerciseType: string;
@@ -107,6 +108,8 @@ export default function WorkoutTracker({ exerciseType }: WorkoutTrackerProps) {
   const toggleTracking = () => {
     if (isTracking) {
       stopCamera();
+    } else {
+       setHasCameraPermission(null); // Reset to trigger camera permission check
     }
     setIsTracking((prev) => !prev);
   };
@@ -116,15 +119,16 @@ export default function WorkoutTracker({ exerciseType }: WorkoutTrackerProps) {
       <Card className="overflow-hidden">
         <CardContent className="p-0">
           <div className="relative aspect-video bg-muted flex items-center justify-center">
-             {hasCameraPermission && (
-                <video
-                    ref={videoRef}
-                    autoPlay
-                    playsInline
-                    muted
-                    className="h-full w-full object-cover"
-                />
-             )}
+            <video
+                ref={videoRef}
+                autoPlay
+                playsInline
+                muted
+                className={cn(
+                  'h-full w-full object-cover',
+                  !hasCameraPermission && 'hidden'
+                )}
+            />
             {hasCameraPermission === false && (
               <Alert variant="destructive" className="m-4">
                 <AlertTitle>Camera Access Required</AlertTitle>
@@ -133,7 +137,7 @@ export default function WorkoutTracker({ exerciseType }: WorkoutTrackerProps) {
                 </AlertDescription>
               </Alert>
             )}
-            {hasCameraPermission === null && (
+            {hasCameraPermission === null && !isTracking && (
                 <div className="text-center text-muted-foreground">
                     <p>Camera is off</p>
                 </div>

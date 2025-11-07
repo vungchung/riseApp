@@ -17,10 +17,8 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Flame, Shield, Star } from 'lucide-react';
 import Image from 'next/image';
-import Link from 'next/link';
 import { Progress } from '@/components/ui/progress';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
-import { cn } from '@/lib/utils';
 
 function getDifficultyBadge(
   difficulty: Dungeon['difficulty']
@@ -50,8 +48,6 @@ function DungeonCard({
 }) {
   const { variant, icon: Icon } = getDifficultyBadge(dungeon.difficulty);
   const dungeonImage = PlaceHolderImages.find((img) => img.id === dungeon.id);
-
-  const status = isMastered ? 'Mastered' : isActive ? 'Active' : 'Available';
 
   return (
     <Card className="flex flex-col overflow-hidden transition-all duration-300 hover:border-primary/50">
@@ -90,10 +86,10 @@ function DungeonCard({
         <Button
           className="w-full"
           onClick={() => !isMastered && !isActive && onStart(dungeon.id)}
-          disabled={isMastered}
-          variant={isActive ? 'outline' : 'default'}
+          disabled={isMastered || (isActive && activeDungeon !== dungeon.id)}
+          variant={activeDungeon === dungeon.id ? 'outline' : 'default'}
         >
-          {isMastered ? 'Mastered' : isActive ? 'Continue Dungeon' : 'Start Challenge'}
+          {isMastered ? 'Mastered' : activeDungeon === dungeon.id ? 'Continue Dungeon' : 'Start Challenge'}
         </Button>
       </CardFooter>
     </Card>

@@ -2,21 +2,33 @@
   "placeholderImages": [
     {
       "id": "dungeon-1",
-      "description": "A dark, ominous castle under a stormy sky.",
-      "imageUrl": "https://images.unsplash.com/photo-1613410881978-0ddd6ecbd6f0?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxkYXJrJTIwY2F2ZXxlbnwwfHx8fDE3NjI0NDEyNTF8MA&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "dark cave"
+      "description": "Man doing pushups.",
+      "imageUrl": "https://images.unsplash.com/photo-1571019614242-c5c5792c6b09?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxwdXNoJTIwdXB8ZW58MHx8fHwxNzM0MzM0NzY5fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "push up"
     },
     {
       "id": "dungeon-2",
-      "description": "A dense, glowing forest at night.",
-      "imageUrl": "https://images.unsplash.com/photo-1719968109598-7c3466966450?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxkZW1vbiUyMGNhc3RsZXxlbnwwfHx8fDE3NjI0NDEyNTF8MA&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "demon castle"
+      "description": "A person doing squats with a barbell.",
+      "imageUrl": "https://images.unsplash.com/photo-1574680178945-98319db57477?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxzbGVnJTIwZGF5fGVufDB8fHx8MTczNDMzNDgwMXww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "leg day"
     },
     {
       "id": "dungeon-3",
-      "description": "A desolate volcanic landscape with lava flows.",
-      "imageUrl": "https://images.unsplash.com/photo-1557911619-11d14e86e99e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHx2b2xjYW5pYyUyMGxhbmRzY2FwZXxlbnwwfHx8fDE3NjIzNDkwNzV8MA&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "volcanic landscape"
+      "description": "Person working out.",
+      "imageUrl": "https://images.unsplash.com/photo-1517836357463-d25dfeac3438?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxib2R5d2VpZ2h0JTIwZXhlcmNpc2V8ZW58MHx8fHwxNzM0MzM0ODMyfDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "bodyweight exercise"
+    },
+    {
+      "id": "dungeon-4",
+      "description": "Person sculpting their body.",
+      "imageUrl": "https://images.unsplash.com/photo-1581009137052-c40971b514f3?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxyZXNpc3RhbmNlJTIwYmFuZHxlbnwwfHx8fDE3MzQzMzQ4NzB8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "resistance band"
+    },
+    {
+      "id": "dungeon-5",
+      "description": "Athlete running on a track.",
+      "imageUrl": "https://images.unsplash.com/photo-1485965120184-e220f721d03e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxhdGhsZXRlfGVufDB8fHx8MTczNDMzNDkwM3ww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "athlete"
     },
     {
       "id": "avatar",

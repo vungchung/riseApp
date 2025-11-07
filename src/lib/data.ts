@@ -13,55 +13,83 @@ export const userProfile: UserProfile = {
 export const MOCK_QUESTS: Quest[] = [
     {
       id: MANDATORY_QUEST_ID,
-      title: 'Mandatory: 1 Minute of Shadow Boxing',
-      description: 'The System requires this basic combat drill daily to maintain your status.',
+      title: 'Daily Mandate: Shadow Boxing',
+      description: 'Perform 1 minute of shadow boxing to sharpen your senses.',
       xp: 10,
       tasks: [
         { description: 'Complete 1 minute of shadow boxing.', completed: false },
       ],
     },
     {
-        id: 'strength-1',
-        title: 'Beginner Strength Training',
-        description: 'Focus on building a solid foundation of strength.',
-        xp: 150,
+        id: 'workout-completion',
+        title: 'Workout Completion',
+        description: 'Complete any workout routine.',
+        xp: 50,
         tasks: [
-            { description: '3x10 Push-ups', completed: false },
-            { description: '3x15 Squats', completed: false },
-            { description: '3x12 Lunges (each leg)', completed: false },
-            { description: '1-minute Plank', completed: false },
+            { description: 'Log one workout session.', completed: false },
         ]
     },
     {
-        id: 'cardio-1',
-        title: 'Endurance Protocol',
-        description: 'Improve your stamina and cardiovascular health.',
-        xp: 120,
+        id: 'endurance-challenge',
+        title: 'Endurance Challenge',
+        description: 'Complete a total of 150+ reps in your workouts today.',
+        xp: 75,
         tasks: [
-            { description: '30 minutes of Jogging', completed: false },
-            { description: '5x1 minute High Knees', completed: false },
-            { description: '5x30 Jumping Jacks', completed: false },
+            { description: 'Reach 150 total repetitions.', completed: false },
         ]
     },
     {
-        id: 'strength-2',
-        title: 'Advanced Upper Body',
-        description: 'Push your upper body to its limits.',
-        xp: 200,
+        id: 'speed-challenge',
+        title: 'Speed Challenge',
+        description: 'Finish a workout in under 20 minutes.',
+        xp: 100,
         tasks: [
-            { description: '5x20 Pull-ups', completed: false },
-            { description: '5x25 Dips', completed: false },
-            { description: '3x15 Overhead Press', completed: false },
+            { description: 'Complete a workout session in less than 20 minutes.', completed: false },
         ]
     },
     {
-        id: 'cardio-2',
-        title: 'High-Intensity Interval Training',
-        description: 'A quick and intense workout to maximize calorie burn.',
-        xp: 180,
+        id: 'hydration-quest',
+        title: 'Hydration Quest',
+        description: 'Log your water intake 8 times today.',
+        xp: 25,
         tasks: [
-            { description: '20 minutes of HIIT (30s on, 30s off)', completed: false },
-            { description: '5 sets of Burpees to failure', completed: false },
+            { description: 'Log 8 glasses of water.', completed: false },
+        ]
+    },
+    {
+        id: 'early-bird',
+        title: 'Early Bird',
+        description: 'Complete a workout before 9 AM.',
+        xp: 50,
+        tasks: [
+            { description: 'Finish a workout session before 9:00 AM.', completed: false },
+        ]
+    },
+    {
+        id: 'push-mastery',
+        title: 'Push Mastery',
+        description: 'Complete a "Push" type workout.',
+        xp: 60,
+        tasks: [
+            { description: 'Complete a push-focused workout.', completed: false },
+        ]
+    },
+    {
+        id: 'leg-day-dominator',
+        title: 'Leg Day Dominator',
+        description: 'Complete a "Legs" type workout.',
+        xp: 60,
+        tasks: [
+            { description: 'Complete a leg-focused workout.', completed: false },
+        ]
+    },
+     {
+        id: 'full-body-blitz',
+        title: 'Full-Body Blitz',
+        description: 'Complete a "Full-Body" workout.',
+        xp: 80,
+        tasks: [
+            { description: 'Complete a full-body workout.', completed: false },
         ]
     }
 ];
@@ -69,34 +97,55 @@ export const MOCK_QUESTS: Quest[] = [
 export const dungeons: Dungeon[] = [
   {
     id: 'dungeon-1',
-    title: 'Goblin Cave',
-    description: 'A 30-day starter challenge to build foundational strength and endurance.',
+    title: 'Push-Up Mastery (30 Days)',
+    description: 'A 30-day trial to forge impeccable upper body strength, ascending from the basics to true push-up mastery.',
     duration: 30,
     difficulty: 'Beginner',
-    type: 'Mastery'
+    type: 'Mastery',
+    badge: 'Push-up Master'
   },
   {
     id: 'dungeon-2',
-    title: 'Demon Castle',
-    description: 'A 60-day program focusing on intermediate techniques and increased intensity.',
-    duration: 60,
+    title: 'Leg Day Domination (30 Days)',
+    description: 'Carve legs of steel as you take on this 30-day challenge to become the undisputed ruler of the squat.',
+    duration: 30,
     difficulty: 'Intermediate',
-    type: 'Mastery'
+    type: 'Mastery',
+    badge: 'Squat Emperor'
+  },
+   {
+    id: 'dungeon-3',
+    title: 'All Body Foundation (30 Days)',
+    description: 'Develop a solid base across all major muscle groups with this 30-day bodyweight program. Perfect for beginners.',
+    duration: 30,
+    difficulty: 'Beginner',
+    type: 'Transformation',
+    badge: 'Solid Foundation'
   },
   {
-    id: 'dungeon-3',
-    title: 'Volcanic Zone',
-    description: 'A 90-day advanced gauntlet designed to push your limits to the absolute maximum.',
+    id: 'dungeon-4',
+    title: 'Full Body Sculpt (60 Days)',
+    description: 'A 60-day intermediate program using resistance to build and define muscle across your entire body.',
+    duration: 60,
+    difficulty: 'Intermediate',
+    type: 'Transformation',
+    badge: 'Body Sculptor'
+  },
+   {
+    id: 'dungeon-5',
+    title: 'Athlete Transformation (90 Days)',
+    description: 'An intensive 90-day program to transform your body, combining advanced lifting, plyometrics, and skill drills.',
     duration: 90,
     difficulty: 'Advanced',
-    type: 'Mastery'
+    type: 'Transformation',
+    badge: 'True Athlete'
   },
 ];
 
 export const badges: Badge[] = [
     { id: 'first-quest', name: 'Quest Novice', description: 'Completed your first quest.', Icon: Star },
     { id: 'streak-7', name: 'Week Warrior', description: 'Maintained a 7-day workout streak.', Icon: Zap },
-    { id: 'dungeon-beginner', name: 'Dungeon Crawler', description: 'Completed the Beginner Dungeon.', Icon: Shield },
+    { id: 'dungeon-beginner', name: 'Dungeon Crawler', description: 'Completed a Beginner Dungeon.', Icon: Shield },
     { id: 'rank-c', name: 'C-Rank Hunter', description: 'Achieved the rank of C.', Icon: Award },
     { id: 'level-50', name: 'Level 50', description: 'Reached level 50.', Icon: Crown },
 ];

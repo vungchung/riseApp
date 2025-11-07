@@ -13,14 +13,11 @@ export const userProfile: UserProfile = {
 export const MOCK_QUESTS: Quest[] = [
     {
       id: MANDATORY_QUEST_ID,
-      title: 'Daily Quest: Path to Power',
-      description: 'Complete these tasks to gain daily experience and become stronger. This quest resets daily.',
-      xp: 100,
+      title: 'Mandatory: 1 Minute of Shadow Boxing',
+      description: 'The System requires this basic combat drill daily to maintain your status.',
+      xp: 10,
       tasks: [
-        { description: '100 Push-ups', completed: false },
-        { description: '100 Sit-ups', completed: false },
-        { description: '100 Squats', completed: false },
-        { description: '10km Run', completed: false },
+        { description: 'Complete 1 minute of shadow boxing.', completed: false },
       ],
     },
     {
@@ -76,6 +73,7 @@ export const dungeons: Dungeon[] = [
     description: 'A 30-day starter challenge to build foundational strength and endurance.',
     duration: 30,
     difficulty: 'Beginner',
+    type: 'Mastery'
   },
   {
     id: 'dungeon-2',
@@ -83,6 +81,7 @@ export const dungeons: Dungeon[] = [
     description: 'A 60-day program focusing on intermediate techniques and increased intensity.',
     duration: 60,
     difficulty: 'Intermediate',
+    type: 'Mastery'
   },
   {
     id: 'dungeon-3',
@@ -90,6 +89,7 @@ export const dungeons: Dungeon[] = [
     description: 'A 90-day advanced gauntlet designed to push your limits to the absolute maximum.',
     duration: 90,
     difficulty: 'Advanced',
+    type: 'Mastery'
   },
 ];
 

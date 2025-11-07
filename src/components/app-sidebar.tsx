@@ -12,7 +12,7 @@ import {
   SidebarFooter,
 } from '@/components/ui/sidebar';
 import { AppLogo } from '@/components/icons';
-import { BarChart3, Flame, LayoutGrid, Swords, User } from 'lucide-react';
+import { BarChart3, Flame, LayoutGrid, Swords, User, Shield } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
@@ -21,6 +21,7 @@ import { useGame } from '@/components/providers/game-provider';
 const navItems = [
   { href: '/', label: 'Dashboard', icon: LayoutGrid },
   { href: '/quests', label: 'Quests', icon: Swords },
+  { href: '/dungeons', label: 'Dungeons', icon: Shield },
   { href: '/tracker', label: 'Tracker', icon: Flame },
   { href: '/profile', label: 'Profile', icon: User },
   { href: '/analytics', label: 'Analytics', icon: BarChart3 },

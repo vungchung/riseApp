@@ -2,15 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { PageHeader } from '@/components/page-header';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
 import { dungeons } from '@/lib/data';
-import { Swords } from 'lucide-react';
 import { XpBar } from '@/components/xp-bar';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -22,6 +14,7 @@ import { UserProfileSetup } from '@/components/profile/user-profile-setup';
 import type { UserProfile } from '@/lib/types';
 import { useGame } from '@/components/providers/game-provider';
 import QuestsOverview from '@/components/quests-overview';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 
 
 function getRankColor(rank: 'E' | 'D' | 'C' | 'B' | 'A' | 'S') {
@@ -105,13 +98,20 @@ export default function DashboardPage() {
       </section>
 
       <section>
-        <h2 className="text-2xl font-headline mb-4">Dungeons</h2>
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-2xl font-headline">Dungeons</h2>
+            <Button variant="ghost" asChild>
+                <Link href="/dungeons">
+                    View All
+                </Link>
+            </Button>
+        </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {dungeons.map((dungeon) => {
+          {dungeons.slice(0,3).map((dungeon) => {
             const dungeonImage = PlaceHolderImages.find(img => img.id === dungeon.id);
             return (
               <Card key={dungeon.id} className="overflow-hidden transform hover:scale-105 transition-transform duration-300">
-                <Link href="#">
+                <Link href="/dungeons">
                   <div className="relative h-48 w-full">
                      {dungeonImage && <Image
                       src={dungeonImage.imageUrl}
@@ -126,13 +126,6 @@ export default function DashboardPage() {
                       <p className="text-sm text-accent">{dungeon.difficulty}</p>
                     </div>
                   </div>
-                  <CardContent className="p-4">
-                    <p className="text-muted-foreground text-sm mb-2">{dungeon.description}</p>
-                    <div className="flex justify-between items-center text-sm">
-                      <span className="font-bold text-primary">{dungeon.duration} Days</span>
-                      <Button size="sm">Enter Dungeon</Button>
-                    </div>
-                  </CardContent>
                 </Link>
               </Card>
             );

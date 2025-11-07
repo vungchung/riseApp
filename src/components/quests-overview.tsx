@@ -13,19 +13,24 @@ import { Check } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { Quest } from '@/lib/types';
 import { useGame } from './providers/game-provider';
+import { MANDATORY_QUEST_ID } from '@/lib/constants';
 
 function QuestCard({ quest }: { quest: Quest }) {
   const { updateTask, claimQuestReward } = useGame();
-
   const allTasksCompleted = quest.tasks.every(task => task.completed);
+  const isMandatory = quest.id === MANDATORY_QUEST_ID;
 
   return (
-    <Card className={cn(allTasksCompleted && "border-green-500/50")}>
+    <Card className={cn(
+        "flex flex-col",
+        allTasksCompleted && "border-green-500/50",
+        isMandatory && "bg-destructive/10 border-destructive/50"
+    )}>
       <CardHeader>
-        <CardTitle className="font-headline">{quest.title}</CardTitle>
+        <CardTitle className={cn("font-headline", isMandatory && "text-destructive")}>{quest.title}</CardTitle>
         <CardDescription>{quest.description}</CardDescription>
       </CardHeader>
-      <CardContent>
+      <CardContent className="flex-grow">
         <ul className="space-y-3">
           {quest.tasks.map((task, index) => (
             <li
@@ -49,13 +54,14 @@ function QuestCard({ quest }: { quest: Quest }) {
         </ul>
       </CardContent>
       <CardFooter className="flex-col items-start gap-4">
-        <div className="text-sm font-medium text-primary">XP Reward: {quest.xp}</div>
+        <div className={cn("text-sm font-medium", isMandatory ? "text-destructive" : "text-primary")}>XP Reward: {quest.xp}</div>
         <Button
           onClick={() => claimQuestReward(quest.id)}
           disabled={!allTasksCompleted}
           className="w-full sm:w-auto"
+          variant={isMandatory ? 'destructive' : 'default'}
         >
-          {allTasksCompleted ? "Claim Reward" : "Complete All Tasks"}
+          {isMandatory ? 'Done' : allTasksCompleted ? "Claim Reward" : "Complete All Tasks"}
         </Button>
       </CardFooter>
     </Card>

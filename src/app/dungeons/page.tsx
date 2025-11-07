@@ -40,11 +40,13 @@ function DungeonCard({
   isActive,
   isMastered,
   onStart,
+  activeDungeon,
 }: {
   dungeon: Dungeon;
   isActive: boolean;
   isMastered: boolean;
   onStart: (id: string) => void;
+  activeDungeon: string | null;
 }) {
   const { variant, icon: Icon } = getDifficultyBadge(dungeon.difficulty);
   const dungeonImage = PlaceHolderImages.find((img) => img.id === dungeon.id);
@@ -125,6 +127,7 @@ export default function DungeonsPage() {
                         isActive={activeDungeon === dungeon.id}
                         isMastered={masteredDungeons.includes(dungeon.id)}
                         onStart={handleStartDungeon}
+                        activeDungeon={activeDungeon}
                     />
                 ))}
             </div>
@@ -139,6 +142,7 @@ export default function DungeonsPage() {
                         isActive={activeDungeon === dungeon.id}
                         isMastered={masteredDungeons.includes(dungeon.id)}
                         onStart={handleStartDungeon}
+                        activeDungeon={activeDungeon}
                     />
                 ))}
             </div>

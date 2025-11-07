@@ -54,7 +54,7 @@ const poseEstimationFlow = ai.defineFlow(
     // For the purpose of this example, we will return dummy data.
 
     // Placeholder for on-device pose estimation and rep counting logic
-    const repCount = Math.floor(Math.random() * 10); // Dummy rep count
+    const repCount = 5; // Dummy rep count - NOT RANDOM
     const formFeedback = 'Keep your back straight.'; // Dummy form feedback
 
     const {output} = await poseEstimationPrompt({

@@ -26,7 +26,15 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
   const { toast } = useToast();
 
   const loadGameState = useCallback(() => {
-    if (isServer) return;
+    if (isServer) {
+        // On the server, and for the initial client render, we use a default/empty state.
+        setUserProfile(initialProfile);
+        const mandatoryQuest = MOCK_QUESTS.find(q => q.id === MANDATORY_QUEST_ID);
+        setQuests(mandatoryQuest ? [mandatoryQuest] : []);
+        setIsLoading(true); // Remain in loading state on server
+        return;
+    };
+    
     try {
       const savedProfile = localStorage.getItem('userProfile');
       const savedQuests = localStorage.getItem('activeQuests');
@@ -61,6 +69,7 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
   }, []);
 
   useEffect(() => {
+    // We only want to load from localStorage on the client, after the initial render.
     loadGameState();
   }, [loadGameState]);
 

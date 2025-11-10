@@ -99,7 +99,7 @@ export function UserProfileSetup({
                 <FormItem>
                   <FormLabel>Height (cm)</FormLabel>
                   <FormControl>
-                    <Input type="number" placeholder="e.g., 180" {...field} />
+                    <Input type="number" placeholder="e.g., 180" {...field} value={field.value ?? ''} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -112,7 +112,7 @@ export function UserProfileSetup({
                 <FormItem>
                   <FormLabel>Weight (kg)</FormLabel>
                   <FormControl>
-                    <Input type="number" placeholder="e.g., 75" {...field} />
+                    <Input type="number" placeholder="e.g., 75" {...field} value={field.value ?? ''} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

@@ -84,7 +84,7 @@ export default function DashboardPage() {
             </Avatar>
             <div className="text-center sm:text-left">
               <CardTitle className="font-headline text-xl sm:text-3xl">{userProfile.name}</CardTitle>
-              <CardDescription className={cn("text-base", getRankColor(userProfile.rank))}>
+              <CardDescription className={cn("text-base sm:text-lg", getRankColor(userProfile.rank))}>
                 Level {userProfile.level} - {userProfile.rank}-Rank Hunter
               </CardDescription>
             </div>
@@ -121,16 +121,16 @@ export default function DashboardPage() {
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {dungeons.slice(0,3).map((dungeon) => {
-            const dungeonImage = PlaceHolderImages.find(img => img.id === dungeon.id);
+            const dungeonImage = PlaceHolderImages.find(img => img.id.includes(dungeon.difficulty.toLowerCase()));
             return (
               <Card key={dungeon.id} className="overflow-hidden transform hover:scale-105 transition-transform duration-300">
                 <Link href="/dungeons">
                   <div className="relative h-48 w-full">
-                     {workoutImage && <Image
-                      src={workoutImage.imageUrl}
+                     {dungeonImage && <Image
+                      src={dungeonImage.imageUrl}
                       alt={dungeon.title}
                       fill
-                      data-ai-hint={workoutImage.imageHint}
+                      data-ai-hint={dungeonImage.imageHint}
                       className="object-cover"
                     />}
                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent" />

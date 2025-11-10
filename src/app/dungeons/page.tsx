@@ -15,7 +15,7 @@ import {
 } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Flame, Shield, Star } from 'lucide-react';
+import { Flame, Shield, Star, CheckCircle } from 'lucide-react';
 import Image from 'next/image';
 import { Progress } from '@/components/ui/progress';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
@@ -54,16 +54,47 @@ function DungeonCard({
   isActive,
   isMastered,
   onStart,
-  activeDungeon,
+  activeDungeonId,
+  progress,
+  onProgress,
+  onMaster,
 }: {
   dungeon: Dungeon;
   isActive: boolean;
   isMastered: boolean;
   onStart: (id: string) => void;
-  activeDungeon: string | null;
+  activeDungeonId: string | null;
+  progress: number;
+  onProgress: () => void;
+  onMaster: (id: string) => void;
 }) {
   const { variant, icon: Icon } = getDifficultyBadge(dungeon.difficulty);
   const dungeonImage = getDungeonImage(dungeon.difficulty);
+  const isAnotherDungeonActive = activeDungeonId !== null && !isActive;
+  const isCompleted = progress >= dungeon.duration;
+
+  const handleButtonClick = () => {
+    if (isMastered) return;
+    if (isActive) {
+      if (isCompleted) {
+        onMaster(dungeon.id);
+      } else {
+        onProgress();
+      }
+    } else if (!activeDungeonId) {
+      onStart(dungeon.id);
+    }
+  };
+
+  const getButtonText = () => {
+    if (isMastered) return 'Mastered';
+    if (isActive) {
+      if (isCompleted) return 'Master Dungeon';
+      return 'Complete Day';
+    }
+    if (isAnotherDungeonActive) return 'Another Dungeon Active';
+    return 'Start Challenge';
+  };
 
   return (
     <Card className="flex flex-col overflow-hidden transition-all duration-300 hover:border-primary/50">
@@ -93,19 +124,20 @@ function DungeonCard({
         <CardDescription>{dungeon.description}</CardDescription>
         {isActive && (
             <div className='mt-4'>
-                <p className='text-sm text-muted-foreground mb-1'>Progress: Day 7 of {dungeon.duration}</p>
-                <Progress value={(7 / dungeon.duration) * 100} className="h-2" />
+                <p className='text-sm text-muted-foreground mb-1'>Progress: Day {progress} of {dungeon.duration}</p>
+                <Progress value={(progress / dungeon.duration) * 100} className="h-2" />
             </div>
         )}
       </CardContent>
       <CardFooter>
         <Button
           className="w-full"
-          onClick={() => !isMastered && !isActive && onStart(dungeon.id)}
-          disabled={isMastered || (isActive && activeDungeon !== dungeon.id)}
-          variant={activeDungeon === dungeon.id ? 'outline' : 'default'}
+          onClick={handleButtonClick}
+          disabled={isMastered || isAnotherDungeonActive}
+          variant={isCompleted ? 'default' : isActive ? 'outline' : 'default'}
         >
-          {isMastered ? 'Mastered' : activeDungeon === dungeon.id ? 'Continue Dungeon' : 'Start Challenge'}
+          {isMastered && <CheckCircle className="mr-2" />}
+          {getButtonText()}
         </Button>
       </CardFooter>
     </Card>
@@ -113,14 +145,26 @@ function DungeonCard({
 }
 
 export default function DungeonsPage() {
-  const [activeDungeon, setActiveDungeon] = useState<string | null>('dungeon-1');
+  const [activeDungeonId, setActiveDungeonId] = useState<string | null>(null);
   const [masteredDungeons, setMasteredDungeons] = useState<string[]>([]);
+  const [dungeonProgress, setDungeonProgress] = useState(0);
   
   const masteryPrograms = dungeons.filter(d => d.type === 'Mastery');
   const transformationPrograms = dungeons.filter(d => d.type === 'Transformation');
 
   const handleStartDungeon = (id: string) => {
-    setActiveDungeon(id);
+    setActiveDungeonId(id);
+    setDungeonProgress(1); // Start at day 1
+  }
+  
+  const handleProgress = () => {
+    setDungeonProgress(p => p + 1);
+  }
+  
+  const handleMasterDungeon = (id: string) => {
+    setMasteredDungeons(prev => [...prev, id]);
+    setActiveDungeonId(null);
+    setDungeonProgress(0);
   }
 
   return (
@@ -138,10 +182,13 @@ export default function DungeonsPage() {
                     <DungeonCard 
                         key={dungeon.id} 
                         dungeon={dungeon} 
-                        isActive={activeDungeon === dungeon.id}
+                        isActive={activeDungeonId === dungeon.id}
                         isMastered={masteredDungeons.includes(dungeon.id)}
                         onStart={handleStartDungeon}
-                        activeDungeon={activeDungeon}
+                        activeDungeonId={activeDungeonId}
+                        progress={activeDungeonId === dungeon.id ? dungeonProgress : 0}
+                        onProgress={handleProgress}
+                        onMaster={handleMasterDungeon}
                     />
                 ))}
             </div>
@@ -153,10 +200,13 @@ export default function DungeonsPage() {
                      <DungeonCard 
                         key={dungeon.id} 
                         dungeon={dungeon} 
-                        isActive={activeDungeon === dungeon.id}
+                        isActive={activeDungeonId === dungeon.id}
                         isMastered={masteredDungeons.includes(dungeon.id)}
                         onStart={handleStartDungeon}
-                        activeDungeon={activeDungeon}
+                        activeDungeonId={activeDungeonId}
+                        progress={activeDungeonId === dungeon.id ? dungeonProgress : 0}
+                        onProgress={handleProgress}
+                        onMaster={handleMasterDungeon}
                     />
                 ))}
             </div>

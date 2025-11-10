@@ -11,7 +11,6 @@ import {
   SidebarContent,
   SidebarFooter,
 } from '@/components/ui/sidebar';
-import { AppLogo } from '@/components/icons';
 import { BarChart3, Flame, LayoutGrid, Swords, User, Shield } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';

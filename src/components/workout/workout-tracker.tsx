@@ -22,36 +22,41 @@ export default function WorkoutTracker({ exerciseType }: WorkoutTrackerProps) {
   const [result, setResult] = useState<PoseEstimationOutput | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
+  const [isClient, setIsClient] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
-    const getCameraPermission = async () => {
-      try {
-        const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } });
-        setHasCameraPermission(true);
+    setIsClient(true);
+  }, []);
 
-        if (videoRef.current) {
-          videoRef.current.srcObject = stream;
-        }
-      } catch (error) {
-        console.error('Error accessing camera:', error);
+  const getCameraPermission = async () => {
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        console.error('Camera API not available in this browser.');
         setHasCameraPermission(false);
         toast({
           variant: 'destructive',
-          title: 'Camera Access Denied',
-          description: 'Please enable camera permissions in your browser settings to use this app.',
+          title: 'Camera Not Supported',
+          description: 'Your browser does not support camera access.',
         });
-      }
-    };
-
-    if (isTracking) {
-        if (hasCameraPermission === null || !hasCameraPermission) {
-            getCameraPermission();
-        }
+        return;
     }
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } });
+      setHasCameraPermission(true);
 
-  }, [isTracking, hasCameraPermission, toast]);
-
+      if (videoRef.current) {
+        videoRef.current.srcObject = stream;
+      }
+    } catch (error) {
+      console.error('Error accessing camera:', error);
+      setHasCameraPermission(false);
+      toast({
+        variant: 'destructive',
+        title: 'Camera Access Denied',
+        description: 'Please enable camera permissions in your browser settings to use this app.',
+      });
+    }
+  };
 
   const stopCamera = () => {
     if (videoRef.current && videoRef.current.srcObject) {
@@ -60,12 +65,18 @@ export default function WorkoutTracker({ exerciseType }: WorkoutTrackerProps) {
       videoRef.current.srcObject = null;
     }
     setHasCameraPermission(null);
-    setIsTracking(false);
   };
-
+  
   useEffect(() => {
+    if (isTracking) {
+      getCameraPermission();
+    } else {
+      stopCamera();
+    }
+    
+    // Cleanup on component unmount
     return () => stopCamera();
-  }, []);
+  }, [isTracking]);
 
   useEffect(() => {
     let intervalId: NodeJS.Timeout;
@@ -106,13 +117,29 @@ export default function WorkoutTracker({ exerciseType }: WorkoutTrackerProps) {
   };
 
   const toggleTracking = () => {
-    if (isTracking) {
-      stopCamera();
-    } else {
-       setHasCameraPermission(null); // Reset to trigger camera permission check
-    }
     setIsTracking((prev) => !prev);
   };
+
+  if (!isClient) {
+    return (
+        <div className="space-y-4">
+            <Card className="overflow-hidden">
+                <CardContent className="p-0">
+                    <div className="relative aspect-video bg-muted flex items-center justify-center">
+                        <Skeleton className="h-full w-full" />
+                    </div>
+                </CardContent>
+            </Card>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+               <Skeleton className="h-12 w-full md:col-span-1" />
+                <div className="md:col-span-2 grid grid-cols-2 gap-4">
+                     <Skeleton className="h-24 w-full" />
+                     <Skeleton className="h-24 w-full" />
+                </div>
+            </div>
+        </div>
+    );
+  }
 
   return (
     <div className="space-y-4">
@@ -126,21 +153,22 @@ export default function WorkoutTracker({ exerciseType }: WorkoutTrackerProps) {
                 muted
                 className={cn(
                   'h-full w-full object-cover',
-                  !hasCameraPermission && 'hidden'
+                  !isTracking || !hasCameraPermission ? 'hidden' : 'block'
                 )}
             />
-            {hasCameraPermission === false && (
-              <Alert variant="destructive" className="m-4">
-                <AlertTitle>Camera Access Required</AlertTitle>
-                <AlertDescription>
-                  Please allow camera access to use this feature.
-                </AlertDescription>
-              </Alert>
-            )}
-            {hasCameraPermission === null && !isTracking && (
-                <div className="text-center text-muted-foreground">
-                    <p>Camera is off</p>
-                </div>
+            {(!isTracking || hasCameraPermission === false) && (
+              <div className="text-center text-muted-foreground p-4">
+                 {hasCameraPermission === false ? (
+                     <Alert variant="destructive">
+                        <AlertTitle>Camera Access Required</AlertTitle>
+                        <AlertDescription>
+                          Please allow camera access to use this feature.
+                        </AlertDescription>
+                      </Alert>
+                 ) : (
+                    <p>Camera is off. Press "Start Tracking" to begin.</p>
+                 )}
+              </div>
             )}
              {isTracking && isPending && (
                 <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
@@ -189,10 +217,6 @@ export default function WorkoutTracker({ exerciseType }: WorkoutTrackerProps) {
             </Card>
         </div>
       </div>
-
-       <div className="mt-4 flex justify-end">
-          <Button variant="outline" onClick={stopCamera} disabled={!isTracking && hasCameraPermission === null}>Turn Off Camera</Button>
-       </div>
     </div>
   );
 }

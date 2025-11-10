@@ -104,21 +104,21 @@ export default function ProfilePage() {
           </Button>
         </CardHeader>
         <CardContent>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4 text-center">
-              <div>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-6 text-center">
+              <div className="p-4 rounded-lg bg-muted/50">
                 <p className="text-sm text-muted-foreground">Height</p>
                 <p className="text-xl font-semibold">{userProfile.height ? `${userProfile.height} cm` : 'N/A'}</p>
               </div>
-              <div>
+              <div className="p-4 rounded-lg bg-muted/50">
                 <p className="text-sm text-muted-foreground">Weight</p>
                 <p className="text-xl font-semibold">{userProfile.weight ? `${userProfile.weight} kg`: 'N/A'}</p>
               </div>
-               <div>
+               <div className="p-4 rounded-lg bg-muted/50">
                 <p className="text-sm text-muted-foreground">Gender</p>
                 <p className="text-xl font-semibold capitalize">{userProfile.gender || 'N/A'}</p>
               </div>
             </div>
-          <p className="text-muted-foreground mb-4">
+          <p className="text-sm text-muted-foreground mb-4">
             All your progress is stored securely on this device. You can export
             your data to create a backup.
           </p>

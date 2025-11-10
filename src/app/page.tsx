@@ -34,6 +34,7 @@ export default function DashboardPage() {
   const [isSetupOpen, setIsSetupOpen] = useState(false);
 
   useEffect(() => {
+    // Only open the setup if the profile is loaded and data is missing.
     if (userProfile && (!userProfile.height || !userProfile.weight || !userProfile.gender)) {
         setIsSetupOpen(true);
     }

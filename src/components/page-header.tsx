@@ -6,7 +6,7 @@ type PageHeaderProps = {
 export function PageHeader({ title, description }: PageHeaderProps) {
   return (
     <div className="mb-8">
-      <h1 className="font-headline text-4xl font-bold tracking-tight text-foreground sm:text-5xl glow-accent">
+      <h1 className="font-headline text-3xl font-bold tracking-tight text-foreground sm:text-5xl glow-accent">
         {title}
       </h1>
       {description && (

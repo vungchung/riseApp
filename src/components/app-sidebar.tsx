@@ -16,6 +16,7 @@ import { cn } from '@/lib/utils';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import { useGame } from '@/components/providers/game-provider';
 import Image from 'next/image';
+import { useSidebar } from './ui/sidebar';
 
 const navItems = [
   { href: '/', label: 'Dashboard', icon: LayoutGrid },
@@ -29,6 +30,7 @@ const navItems = [
 export function AppSidebar() {
   const pathname = usePathname();
   const { userProfile, isLoading } = useGame();
+  const { setOpenMobile } = useSidebar();
 
   const getAvatarForRank = (rank: 'E' | 'D' | 'C' | 'B' | 'A' | 'S') => {
     const rankAvatars: Record<typeof rank, string> = {
@@ -57,7 +59,7 @@ export function AppSidebar() {
         <SidebarMenu>
           {navItems.map((item) => (
             <SidebarMenuItem key={item.href}>
-              <Link href={item.href}>
+              <Link href={item.href} onClick={() => setOpenMobile(false)}>
                 <SidebarMenuButton
                   className={cn(
                     'w-full justify-start',
@@ -78,7 +80,7 @@ export function AppSidebar() {
       </SidebarContent>
      {userProfile && !isLoading && (
         <SidebarFooter className="p-4">
-            <Link href="/profile">
+            <Link href="/profile" onClick={() => setOpenMobile(false)}>
                 <div className="flex items-center gap-3 p-2 rounded-lg hover:bg-muted">
                     <Avatar className="h-10 w-10 border-2 border-accent">
                          <AvatarImage src={getAvatarForRank(userProfile.rank)} alt={userProfile.name} />

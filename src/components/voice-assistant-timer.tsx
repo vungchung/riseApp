@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { Mic, MicOff, AlertCircle, Wifi, WifiOff } from 'lucide-react';
+import { Mic, MicOff, AlertCircle, WifiOff } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 
@@ -183,6 +183,11 @@ export function VoiceAssistantTimer() {
   const toggleListen = () => {
     if (!isSupported || !recognitionRef.current || !isOnline) return;
     
+    if (isListening) {
+      recognitionRef.current.stop();
+    } else {
+      recognitionRef.current.start();
+    }
     setIsListening(prev => !prev);
   };
   
@@ -199,7 +204,7 @@ export function VoiceAssistantTimer() {
        <div className="space-y-6 flex flex-col items-center">
             <Card className="w-full max-w-md">
                 <CardContent className="p-6">
-                    <p className="text-center text-6xl font-mono tracking-tighter text-foreground font-bold">
+                    <p className="text-center text-5xl sm:text-6xl font-mono tracking-tighter text-foreground font-bold">
                         00 : 00 : 00
                     </p>
                 </CardContent>
@@ -224,7 +229,7 @@ export function VoiceAssistantTimer() {
     <div className="space-y-6 flex flex-col items-center">
       <Card className="w-full max-w-md">
         <CardContent className="p-6">
-          <p className="text-center text-6xl font-mono tracking-tighter text-foreground font-bold">
+          <p className="text-center text-5xl sm:text-6xl font-mono tracking-tighter text-foreground font-bold">
             {formatTime(time)}
           </p>
         </CardContent>

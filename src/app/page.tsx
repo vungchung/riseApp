@@ -77,14 +77,14 @@ export default function DashboardPage() {
       
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
         <Card className="md:col-span-3 bg-card/50 backdrop-blur-sm">
-          <CardHeader className="flex flex-row items-center gap-4">
-            <Avatar className="h-16 w-16 border-2 border-primary glow-primary">
+          <CardHeader className="flex flex-col sm:flex-row items-center gap-4">
+            <Avatar className="h-16 w-16 sm:h-20 sm:w-20 border-2 border-primary glow-primary">
               <AvatarImage src={getAvatarForRank(userProfile.rank)} alt={userProfile.name} />
               <AvatarFallback>{userProfile.name.charAt(0)}</AvatarFallback>
             </Avatar>
-            <div>
-              <CardTitle className="font-headline text-3xl">{userProfile.name}</CardTitle>
-              <CardDescription className={cn("text-lg", getRankColor(userProfile.rank))}>
+            <div className="text-center sm:text-left">
+              <CardTitle className="font-headline text-2xl sm:text-3xl">{userProfile.name}</CardTitle>
+              <CardDescription className={cn("text-base sm:text-lg", getRankColor(userProfile.rank))}>
                 Level {userProfile.level} - {userProfile.rank}-Rank Hunter
               </CardDescription>
             </div>

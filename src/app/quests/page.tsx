@@ -45,22 +45,22 @@ function DailyQuestTimer() {
 
   if (!isClient) {
     return (
-        <Card className="bg-card/80 border-destructive/50 backdrop-blur-sm text-center py-12">
+        <Card className="bg-card/80 border-destructive/50 backdrop-blur-sm text-center py-8 sm:py-12">
             <CardContent className="p-4 pt-4">
-                <Timer className="w-12 h-12 text-destructive mx-auto mb-4"/>
-                <h3 className="text-xl font-headline font-bold text-destructive">Daily Mandate Completed</h3>
-                <p className="text-muted-foreground mt-2">Your mandatory quest is done for today. It will reset soon.</p>
+                <Timer className="w-10 h-10 sm:w-12 sm:h-12 text-destructive mx-auto mb-4"/>
+                <h3 className="text-lg sm:text-xl font-headline font-bold text-destructive">Daily Mandate Completed</h3>
+                <p className="text-muted-foreground mt-2 text-sm sm:text-base">Your mandatory quest is done for today. It will reset soon.</p>
             </CardContent>
         </Card>
     );
   }
 
   return (
-    <Card className="bg-card/80 border-destructive/50 backdrop-blur-sm text-center py-12">
+    <Card className="bg-card/80 border-destructive/50 backdrop-blur-sm text-center py-8 sm:py-12">
       <CardContent className="p-4 pt-4">
-        <Timer className="w-12 h-12 text-destructive mx-auto mb-4"/>
-        <h3 className="text-xl font-headline font-bold text-destructive">Daily Mandate Completed</h3>
-        <p className="text-muted-foreground mt-2">Your mandatory quest is done for today. It will reset in:</p>
+        <Timer className="w-10 h-10 sm:w-12 sm:h-12 text-destructive mx-auto mb-4"/>
+        <h3 className="text-lg sm:text-xl font-headline font-bold text-destructive">Daily Mandate Completed</h3>
+        <p className="text-muted-foreground mt-2 text-sm sm:text-base">Your mandatory quest is done for today. It will reset in:</p>
         <p className="text-2xl font-mono font-bold text-foreground mt-3">{timeLeft}</p>
       </CardContent>
     </Card>
@@ -135,9 +135,9 @@ export default function QuestsPage() {
         ) : (
              <Card className="bg-card/80 border-primary/20 backdrop-blur-sm text-center py-12">
                  <CardContent className="p-4 pt-4">
-                    <CheckCircle2 className="w-12 h-12 text-accent mx-auto mb-4"/>
-                    <h3 className="text-xl font-headline font-bold">Quest Board Cleared!</h3>
-                    <p className="text-muted-foreground mt-2">You've accepted all available quests for today. Check back tomorrow for more!</p>
+                    <CheckCircle2 className="w-10 h-10 sm:w-12 sm:h-12 text-accent mx-auto mb-4"/>
+                    <h3 className="text-lg sm:text-xl font-headline font-bold">Quest Board Cleared!</h3>
+                    <p className="text-muted-foreground mt-2 text-sm sm:text-base">You've accepted all available quests for today. Check back tomorrow for more!</p>
                  </CardContent>
             </Card>
         )}

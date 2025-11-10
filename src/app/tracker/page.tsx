@@ -12,7 +12,7 @@ export default function TrackerPage() {
       />
       <Card>
         <CardHeader>
-          <CardTitle className="font-headline text-2xl">Workout Timer</CardTitle>
+          <CardTitle className="font-headline text-xl sm:text-2xl">Workout Timer</CardTitle>
           <CardDescription>
             A hands-free timer to assist you during your training sessions.
           </CardDescription>

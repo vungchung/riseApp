@@ -74,16 +74,16 @@ export default function ProfilePage() {
         description="Your identity and achievements in the system."
       />
       <div className="flex flex-col items-center text-center mb-8">
-        <Avatar className="h-32 w-32 mb-4 border-4 border-primary glow-primary">
+        <Avatar className="h-24 w-24 sm:h-32 sm:w-32 mb-4 border-4 border-primary glow-primary">
           <AvatarImage src={getAvatarForRank(userProfile.rank)} alt={userProfile.name} />
-          <AvatarFallback className="text-4xl">
+          <AvatarFallback className="text-3xl sm:text-4xl">
             {userProfile.name.charAt(0)}
           </AvatarFallback>
         </Avatar>
-        <h2 className="text-4xl font-headline font-bold">{userProfile.name}</h2>
+        <h2 className="text-3xl sm:text-4xl font-headline font-bold">{userProfile.name}</h2>
         <p
           className={cn(
-            'text-2xl font-semibold',
+            'text-xl sm:text-2xl font-semibold',
             getRankColor(userProfile.rank)
           )}
         >
@@ -104,21 +104,21 @@ export default function ProfilePage() {
           </Button>
         </CardHeader>
         <CardContent>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-6 text-center">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-center">
               <div className="p-4 rounded-lg bg-muted/50">
                 <p className="text-sm text-muted-foreground">Height</p>
-                <p className="text-xl font-semibold">{userProfile.height ? `${userProfile.height} cm` : 'N/A'}</p>
+                <p className="text-lg sm:text-xl font-semibold">{userProfile.height ? `${userProfile.height} cm` : 'N/A'}</p>
               </div>
               <div className="p-4 rounded-lg bg-muted/50">
                 <p className="text-sm text-muted-foreground">Weight</p>
-                <p className="text-xl font-semibold">{userProfile.weight ? `${userProfile.weight} kg`: 'N/A'}</p>
+                <p className="text-lg sm:text-xl font-semibold">{userProfile.weight ? `${userProfile.weight} kg`: 'N/A'}</p>
               </div>
                <div className="p-4 rounded-lg bg-muted/50">
                 <p className="text-sm text-muted-foreground">Gender</p>
-                <p className="text-xl font-semibold capitalize">{userProfile.gender || 'N/A'}</p>
+                <p className="text-lg sm:text-xl font-semibold capitalize">{userProfile.gender || 'N/A'}</p>
               </div>
             </div>
-          <p className="text-sm text-muted-foreground mb-4">
+          <p className="text-sm text-muted-foreground my-4">
             All your progress is stored securely on this device. You can export
             your data to create a backup.
           </p>
@@ -135,12 +135,12 @@ export default function ProfilePage() {
           {badges.map(({ id, name, description, Icon }) => (
             <Card
               key={id}
-              className="flex flex-col items-center p-6 text-center hover:bg-muted/50 transition-colors"
+              className="flex flex-col items-center p-4 sm:p-6 text-center hover:bg-muted/50 transition-colors"
             >
-              <div className="p-4 bg-accent/10 rounded-full mb-3 border border-accent/50">
-                <Icon className="h-10 w-10 text-accent glow-accent" />
+              <div className="p-3 sm:p-4 bg-accent/10 rounded-full mb-3 border border-accent/50">
+                <Icon className="h-8 w-8 sm:h-10 sm:w-10 text-accent glow-accent" />
               </div>
-              <p className="font-semibold">{name}</p>
+              <p className="font-semibold text-sm sm:text-base">{name}</p>
               <p className="text-xs text-muted-foreground">{description}</p>
             </Card>
           ))}

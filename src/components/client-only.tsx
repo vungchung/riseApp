@@ -1,13 +1,13 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { AppLogo } from './icons';
+import { useState, useEffect, type ReactNode } from 'react';
 
 type ClientOnlyProps = {
-  children: React.ReactNode;
+  children: ReactNode;
+  fallback?: ReactNode;
 };
 
-export function ClientOnly({ children }: ClientOnlyProps) {
+export function ClientOnly({ children, fallback = null }: ClientOnlyProps) {
   const [hasMounted, setHasMounted] = useState(false);
 
   useEffect(() => {
@@ -15,14 +15,7 @@ export function ClientOnly({ children }: ClientOnlyProps) {
   }, []);
 
   if (!hasMounted) {
-    return (
-        <div className="flex h-screen w-full items-center justify-center bg-background">
-            <div className="flex flex-col items-center gap-4">
-                 <AppLogo className="w-20 h-20 text-primary animate-pulse glow-primary" />
-                 <p className="text-muted-foreground">Loading System...</p>
-            </div>
-        </div>
-    );
+    return fallback;
   }
 
   return <>{children}</>;

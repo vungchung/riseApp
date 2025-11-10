@@ -43,25 +43,17 @@ function DailyQuestTimer() {
     return () => clearInterval(interval);
   }, []);
 
-  if (!isClient) {
-    return (
-        <Card className="bg-card/80 border-destructive/50 backdrop-blur-sm text-center py-8 sm:py-12">
-            <CardContent className="p-4 pt-4">
-                <Timer className="w-10 h-10 sm:w-12 sm:h-12 text-destructive mx-auto mb-4"/>
-                <h3 className="text-lg sm:text-xl font-headline font-bold text-destructive">Daily Mandate Completed</h3>
-                <p className="text-muted-foreground mt-2 text-sm sm:text-base">Your mandatory quest is done for today. It will reset soon.</p>
-            </CardContent>
-        </Card>
-    );
-  }
-
   return (
     <Card className="bg-card/80 border-destructive/50 backdrop-blur-sm text-center py-8 sm:py-12">
       <CardContent className="p-4 pt-4">
         <Timer className="w-10 h-10 sm:w-12 sm:h-12 text-destructive mx-auto mb-4"/>
         <h3 className="text-lg sm:text-xl font-headline font-bold text-destructive">Daily Mandate Completed</h3>
         <p className="text-muted-foreground mt-2 text-sm sm:text-base">Your mandatory quest is done for today. It will reset in:</p>
-        <p className="text-2xl font-mono font-bold text-foreground mt-3">{timeLeft}</p>
+        {isClient ? (
+          <p className="text-2xl font-mono font-bold text-foreground mt-3">{timeLeft}</p>
+        ) : (
+          <p className="text-2xl font-mono font-bold text-foreground mt-3">--:--:--</p>
+        )}
       </CardContent>
     </Card>
   );

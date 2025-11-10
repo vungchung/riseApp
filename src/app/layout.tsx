@@ -4,7 +4,6 @@ import { cn } from '@/lib/utils';
 import { Toaster } from '@/components/ui/toaster';
 import { AppSidebar } from '@/components/app-sidebar';
 import { SidebarProvider } from '@/components/ui/sidebar';
-import { ClientOnly } from '@/components/client-only';
 import { GameProvider } from '@/components/providers/game-provider';
 import { MobileHeader } from '@/components/mobile-header';
 
@@ -33,21 +32,19 @@ export default function RootLayout({
           'min-h-screen bg-background font-body antialiased'
         )}
       >
-        <ClientOnly>
-          <GameProvider>
-            <SidebarProvider>
-              <div className="flex">
-                  <AppSidebar />
-                <main className="flex-1 min-w-0">
-                  <MobileHeader />
-                  <div className="md:p-0 pt-16">
-                    {children}
-                  </div>
-                  </main>
-              </div>
-            </SidebarProvider>
-          </GameProvider>
-        </ClientOnly>
+        <GameProvider>
+          <SidebarProvider>
+            <div className="flex">
+                <AppSidebar />
+              <main className="flex-1 min-w-0">
+                <MobileHeader />
+                <div className="md:p-0 pt-16">
+                  {children}
+                </div>
+                </main>
+            </div>
+          </SidebarProvider>
+        </GameProvider>
         <Toaster />
       </body>
     </html>

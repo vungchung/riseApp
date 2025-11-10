@@ -5,9 +5,13 @@ import { userProfile as initialProfile, MOCK_QUESTS } from '@/lib/data';
 import { useToast } from '@/hooks/use-toast';
 import { MANDATORY_QUEST_ID } from '@/lib/constants';
 
-interface GameContextType {
-  userProfile: UserProfile | null;
+interface GameState {
+  userProfile: UserProfile;
   quests: Quest[];
+  lastDailyQuestCompletionDate: string | null;
+}
+
+interface GameContextType extends GameState {
   updateUserProfile: (data: Partial<UserProfile>) => void;
   addDailyQuest: (questId: string) => void;
   updateTask: (questId: string, taskIndex: number, completed: boolean) => void;
@@ -19,44 +23,54 @@ const GameContext = createContext<GameContextType | undefined>(undefined);
 
 const isServer = typeof window === 'undefined';
 
+const getTodayDateString = () => {
+    const today = new Date();
+    return today.toISOString().split('T')[0]; // YYYY-MM-DD
+}
+
 export const GameProvider = ({ children }: { children: React.ReactNode }) => {
-  const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
+  const [userProfile, setUserProfile] = useState<UserProfile>(initialProfile);
   const [quests, setQuests] = useState<Quest[]>([]);
+  const [lastDailyQuestCompletionDate, setLastDailyQuestCompletionDate] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const { toast } = useToast();
 
   const loadGameState = useCallback(() => {
     if (isServer) {
-        // On the server, and for the initial client render, we use a default/empty state.
-        setUserProfile(initialProfile);
-        const mandatoryQuest = MOCK_QUESTS.find(q => q.id === MANDATORY_QUEST_ID);
-        setQuests(mandatoryQuest ? [mandatoryQuest] : []);
-        setIsLoading(true); // Remain in loading state on server
         return;
     };
     
     try {
-      const savedProfile = localStorage.getItem('userProfile');
-      const savedQuests = localStorage.getItem('activeQuests');
-      
-      let currentProfile: UserProfile;
-      if (savedProfile) {
-        currentProfile = JSON.parse(savedProfile);
-      } else {
-        currentProfile = initialProfile;
-        localStorage.setItem('userProfile', JSON.stringify(currentProfile));
-      }
-      setUserProfile(currentProfile);
+      const savedStateRaw = localStorage.getItem('gameState');
+      const mandatoryQuest = MOCK_QUESTS.find(q => q.id === MANDATORY_QUEST_ID)!;
 
-      let currentQuests: Quest[];
-      if (savedQuests) {
-        currentQuests = JSON.parse(savedQuests);
+      if (savedStateRaw) {
+        const savedState: GameState = JSON.parse(savedStateRaw);
+        
+        setUserProfile(savedState.userProfile);
+        
+        const today = getTodayDateString();
+        // If the daily quest was completed on a previous day, reset it.
+        if (savedState.lastDailyQuestCompletionDate && savedState.lastDailyQuestCompletionDate < today) {
+            setLastDailyQuestCompletionDate(null);
+            const activeQuestsWithoutDaily = savedState.quests.filter(q => q.id !== MANDATORY_QUEST_ID);
+            setQuests([mandatoryQuest, ...activeQuestsWithoutDaily]);
+        } else {
+            setLastDailyQuestCompletionDate(savedState.lastDailyQuestCompletionDate);
+            // Ensure mandatory quest is always present if not completed today
+            const hasMandatory = savedState.quests.some(q => q.id === MANDATORY_QUEST_ID);
+            if (!hasMandatory && savedState.lastDailyQuestCompletionDate !== today) {
+                 setQuests([mandatoryQuest, ...savedState.quests]);
+            } else {
+                 setQuests(savedState.quests);
+            }
+        }
       } else {
-        const mandatoryQuest = MOCK_QUESTS.find(q => q.id === MANDATORY_QUEST_ID);
-        currentQuests = mandatoryQuest ? [mandatoryQuest] : [];
-        localStorage.setItem('activeQuests', JSON.stringify(currentQuests));
+        // First time load
+        setUserProfile(initialProfile);
+        setQuests([mandatoryQuest]);
+        setLastDailyQuestCompletionDate(null);
       }
-      setQuests(currentQuests);
 
     } catch (error) {
       console.error("Failed to load game state from localStorage", error);
@@ -69,26 +83,20 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
   }, []);
 
   useEffect(() => {
-    // We only want to load from localStorage on the client, after the initial render.
     loadGameState();
   }, [loadGameState]);
-
-  const saveGameState = useCallback((profile: UserProfile, activeQuests: Quest[]) => {
-    if (isServer) return;
-    try {
-      localStorage.setItem('userProfile', JSON.stringify(profile));
-      localStorage.setItem('activeQuests', JSON.stringify(activeQuests));
-    } catch (error) {
-      console.error("Failed to save game state to localStorage", error);
+  
+  useEffect(() => {
+    if (!isLoading) {
+        const gameState: GameState = { userProfile, quests, lastDailyQuestCompletionDate };
+        localStorage.setItem('gameState', JSON.stringify(gameState));
     }
-  }, []);
+  }, [userProfile, quests, lastDailyQuestCompletionDate, isLoading]);
 
   const updateUserProfile = (data: Partial<UserProfile>) => {
     setUserProfile(prevProfile => {
-      if (!prevProfile) return null;
-      const newProfile = { ...prevProfile, ...data };
-      saveGameState(newProfile, quests);
-      return newProfile;
+      if (!prevProfile) return initialProfile;
+      return { ...prevProfile, ...data };
     });
   };
 
@@ -97,14 +105,13 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
     if (questToAdd && !quests.find(q => q.id === questId)) {
       const newQuests = [...quests, { ...questToAdd, tasks: questToAdd.tasks.map(t => ({...t, completed: false})) }];
       setQuests(newQuests);
-      if(userProfile) saveGameState(userProfile, newQuests);
       toast({ title: "Quest Accepted!", description: `"${questToAdd.title}" has been added to your active quests.` });
     }
   };
 
   const updateTask = (questId: string, taskIndex: number, completed: boolean) => {
     setQuests(prevQuests => {
-      const newQuests = prevQuests.map(q => {
+      return prevQuests.map(q => {
         if (q.id === questId) {
           const newTasks = [...q.tasks];
           newTasks[taskIndex] = { ...newTasks[taskIndex], completed };
@@ -112,8 +119,6 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
         }
         return q;
       });
-      if(userProfile) saveGameState(userProfile, newQuests);
-      return newQuests;
     });
   };
 
@@ -127,7 +132,6 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
 
       if (newXp >= xpToNextLevel) {
         newLevel += 1;
-        // Simple progression, can be made more complex
         xpToNextLevel = Math.floor(xpToNextLevel * 1.5); 
       }
       
@@ -138,20 +142,25 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
         xpToNextLevel: xpToNextLevel,
         rank: newRank,
       };
-
-      const newQuests = quest.id === MANDATORY_QUEST_ID 
-        ? quests.map(q => q.id === questId ? {...q, tasks: q.tasks.map(t => ({...t, completed: false}))} : q)
-        : quests.filter(q => q.id !== questId);
+      
+      let newQuests: Quest[];
+      if (quest.id === MANDATORY_QUEST_ID) {
+          setLastDailyQuestCompletionDate(getTodayDateString());
+          // Remove the mandatory quest from the active list for today
+          newQuests = quests.filter(q => q.id !== questId);
+      } else {
+          // Remove the optional quest from the active list
+          newQuests = quests.filter(q => q.id !== questId);
+      }
 
       setUserProfile(newProfile);
       setQuests(newQuests);
-      saveGameState(newProfile, newQuests);
       toast({ title: "Reward Claimed!", description: `You earned ${quest.xp} XP!` });
     }
   };
 
   return (
-    <GameContext.Provider value={{ userProfile, quests, updateUserProfile, addDailyQuest, updateTask, claimQuestReward, isLoading }}>
+    <GameContext.Provider value={{ userProfile, quests, lastDailyQuestCompletionDate, updateUserProfile, addDailyQuest, updateTask, claimQuestReward, isLoading }}>
       {children}
     </GameContext.Provider>
   );

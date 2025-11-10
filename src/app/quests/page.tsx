@@ -1,19 +1,62 @@
 'use client';
 
+import { useEffect, useState } from 'react';
 import { useGame } from "@/components/providers/game-provider";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { PlusCircle, CheckCircle2 } from "lucide-react";
+import { PlusCircle, CheckCircle2, Timer } from "lucide-react";
 import { MOCK_QUESTS } from "@/lib/data";
 import QuestsOverview from "@/components/quests-overview";
 import { cn } from "@/lib/utils";
 import { MANDATORY_QUEST_ID } from "@/lib/constants";
 
+function DailyQuestTimer() {
+  const [timeLeft, setTimeLeft] = useState('');
+
+  useEffect(() => {
+    const calculateTimeLeft = () => {
+      const now = new Date();
+      const tomorrow = new Date(now);
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      tomorrow.setHours(0, 0, 0, 0);
+
+      const diff = tomorrow.getTime() - now.getTime();
+
+      const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+      const minutes = Math.floor((diff / 1000 / 60) % 60);
+      const seconds = Math.floor((diff / 1000) % 60);
+
+      return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+    };
+
+    setTimeLeft(calculateTimeLeft());
+    const interval = setInterval(() => {
+      setTimeLeft(calculateTimeLeft());
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  return (
+    <Card className="bg-card/80 border-destructive/50 backdrop-blur-sm text-center py-12">
+      <CardContent className="p-4 pt-4">
+        <Timer className="w-12 h-12 text-destructive mx-auto mb-4"/>
+        <h3 className="text-xl font-headline font-bold text-destructive">Daily Mandate Completed</h3>
+        <p className="text-muted-foreground mt-2">Your mandatory quest is done for today. It will reset in:</p>
+        <p className="text-2xl font-mono font-bold text-foreground mt-3">{timeLeft}</p>
+      </CardContent>
+    </Card>
+  );
+}
+
 export default function QuestsPage() {
-    const { quests, addDailyQuest } = useGame();
+    const { quests, addDailyQuest, lastDailyQuestCompletionDate } = useGame();
 
     const activeQuestIds = quests.map(q => q.id);
     const availableQuests = MOCK_QUESTS.filter(q => !activeQuestIds.includes(q.id) && q.id !== MANDATORY_QUEST_ID);
+    
+    const today = new Date().toISOString().split('T')[0];
+    const isDailyQuestCompleted = lastDailyQuestCompletionDate === today;
 
   return (
     <div className="container mx-auto p-4 sm:p-6 lg:p-8 space-y-8">
@@ -21,7 +64,18 @@ export default function QuestsPage() {
         <h1 className="text-3xl font-bold font-headline mb-2">Active Quests</h1>
         <p className="text-muted-foreground">Your currently accepted daily challenges. The mandatory quest resets daily.</p>
         <div className="mt-4">
-            <QuestsOverview quests={quests} />
+            {quests.length > 0 ? (
+                <QuestsOverview quests={quests} />
+            ) : isDailyQuestCompleted ? (
+                <DailyQuestTimer />
+            ) : (
+                <Card className="text-center py-12">
+                    <CardContent>
+                    <h3 className="text-xl font-headline font-bold">No Active Quests</h3>
+                    <p className="text-muted-foreground mt-2">Visit the Quest Board to accept new quests.</p>
+                    </CardContent>
+                </Card>
+            )}
         </div>
       </div>
       

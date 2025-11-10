@@ -1,24 +1,24 @@
 
 import { PageHeader } from '@/components/page-header';
-import WorkoutTracker from '@/components/workout/workout-tracker';
+import { VoiceAssistantTimer } from '@/components/voice-assistant-timer';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 
 export default function TrackerPage() {
   return (
     <div className="container mx-auto p-4 sm:p-6 lg:p-8">
       <PageHeader
-        title="Workout Tracker"
-        description="Engage in combat training. The system will monitor your performance."
+        title="Voice Assistant"
+        description="Control the timer with your voice. Try 'start timer' or 'how much time has passed?'"
       />
       <Card>
         <CardHeader>
-          <CardTitle className="font-headline text-2xl">Mandatory Quest: Shadow Boxing</CardTitle>
+          <CardTitle className="font-headline text-2xl">Workout Timer</CardTitle>
           <CardDescription>
-            Practice your combat forms. The AI will count your reps and provide feedback.
+            A hands-free timer to assist you during your training sessions.
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <WorkoutTracker exerciseType="Shadow Boxing" />
+          <VoiceAssistantTimer />
         </CardContent>
       </Card>
     </div>

@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { Mic, MicOff, AlertCircle } from 'lucide-react';
+import { Mic, MicOff, AlertCircle, Wifi, WifiOff } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 
@@ -39,12 +39,25 @@ export function VoiceAssistantTimer() {
   const [isListening, setIsListening] = useState(false);
   const [isSupported, setIsSupported] = useState(true);
   const [isClient, setIsClient] = useState(false);
+  const [isOnline, setIsOnline] = useState(true);
   const recognitionRef = useRef<SpeechRecognition | null>(null);
   const errorOccurredRef = useRef(false);
   const { toast } = useToast();
 
   useEffect(() => {
     setIsClient(true);
+    
+    // Set initial online status
+    if (typeof navigator !== 'undefined') {
+        setIsOnline(navigator.onLine);
+    }
+
+    const handleOnline = () => setIsOnline(true);
+    const handleOffline = () => setIsOnline(false);
+
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+
     // Check for browser support on component mount
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (!SpeechRecognition || !window.speechSynthesis) {
@@ -98,15 +111,17 @@ export function VoiceAssistantTimer() {
 
     recognitionRef.current = recognition;
 
-    // Cleanup function to stop recognition if component unmounts
+    // Cleanup function
     return () => {
         if (recognitionRef.current) {
             recognitionRef.current.onend = null; // Prevent restart on unmount
             recognitionRef.current.stop();
         }
+        window.removeEventListener('online', handleOnline);
+        window.removeEventListener('offline', handleOffline);
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [isListening]); // Re-run effect if isListening changes to handle restart logic
   
   useEffect(() => {
     let interval: NodeJS.Timeout | null = null;
@@ -123,7 +138,7 @@ export function VoiceAssistantTimer() {
   }, [isActive]);
 
   const speak = (text: string) => {
-    if (!isSupported) return;
+    if (!isSupported || !isOnline) return;
     try {
         const utterance = new SpeechSynthesisUtterance(text);
         window.speechSynthesis.speak(utterance);
@@ -141,6 +156,7 @@ export function VoiceAssistantTimer() {
   };
 
   const handleVoiceCommand = (command: string) => {
+    if (!isOnline) return;
     if (command.includes('start timer')) {
       handleStart();
       speak('Timer started.');
@@ -165,27 +181,9 @@ export function VoiceAssistantTimer() {
   };
 
   const toggleListen = () => {
-    if (!isSupported || !recognitionRef.current) return;
-    const wasListening = isListening;
-
-    if (wasListening) {
-        errorOccurredRef.current = true; // Manually stop restart
-        recognitionRef.current.stop();
-        setIsListening(false);
-    } else {
-      try {
-        errorOccurredRef.current = false;
-        recognitionRef.current.start();
-        setIsListening(true);
-      } catch (err) {
-        console.error("Error starting recognition:", err);
-        toast({
-          variant: 'destructive',
-          title: 'Could not start listening',
-          description: 'Please check your microphone and browser permissions.',
-        });
-      }
-    }
+    if (!isSupported || !recognitionRef.current || !isOnline) return;
+    
+    setIsListening(prev => !prev);
   };
   
   const handleStart = () => setIsActive(true);
@@ -216,7 +214,7 @@ export function VoiceAssistantTimer() {
         <AlertCircle className="h-4 w-4" />
         <AlertTitle>Browser Not Supported</AlertTitle>
         <AlertDescription>
-          Voice recognition and synthesis are not supported in this browser. Please try Chrome or Safari.
+          Voice recognition and synthesis are not supported in this browser. Please try Chrome or Safari. The manual timer is still available.
         </AlertDescription>
       </Alert>
     );
@@ -232,15 +230,27 @@ export function VoiceAssistantTimer() {
         </CardContent>
       </Card>
       
-      <div className="flex flex-col items-center gap-4">
-        <Button onClick={toggleListen} variant={isListening ? 'destructive' : 'outline'} size="lg" className="w-48">
-          {isListening ? <Mic className="mr-2" /> : <MicOff className="mr-2" />}
-          {isListening ? 'Stop Listening' : 'Start Listening'}
-        </Button>
-        <p className={cn("text-sm text-muted-foreground transition-opacity", isListening ? 'opacity-100' : 'opacity-0')}>
-            Listening for commands...
-        </p>
-      </div>
+      {isSupported && (
+        <div className="flex flex-col items-center gap-4">
+            {isOnline ? (
+                <>
+                    <Button onClick={toggleListen} variant={isListening ? 'destructive' : 'outline'} size="lg" className="w-48">
+                    {isListening ? <Mic className="mr-2" /> : <MicOff className="mr-2" />}
+                    {isListening ? 'Stop Listening' : 'Start Listening'}
+                    </Button>
+                    <p className={cn("text-sm text-muted-foreground transition-opacity", isListening ? 'opacity-100' : 'opacity-0')}>
+                        Listening for commands...
+                    </p>
+                </>
+            ) : (
+                <div className="flex items-center gap-2 text-muted-foreground p-3 rounded-md bg-muted border">
+                    <WifiOff className="h-5 w-5" />
+                    <p className="text-sm">Voice control disabled while offline.</p>
+                </div>
+            )}
+        </div>
+      )}
+
 
       <div className="flex w-full max-w-md justify-center space-x-4">
         <Button onClick={handleStart} disabled={isActive} className="flex-1">Start</Button>

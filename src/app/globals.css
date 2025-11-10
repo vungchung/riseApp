@@ -68,9 +68,7 @@ body {
     @apply bg-background text-foreground;
   }
   .glow-accent {
-    -webkit-box-shadow: 0 0 15px hsl(var(--accent) / 0.6);
-    -moz-box-shadow: 0 0 15px hsl(var(--accent) / 0.6);
-    box-shadow: 0 0 15px hsl(var(--accent) / 0.6);
+    text-shadow: 0 0 15px hsl(var(--accent) / 0.6), 0 0 5px hsl(var(--accent) / 0.5);
   }
   .glow-primary {
     -webkit-box-shadow: 0 0 15px hsl(var(--primary) / 0.5);

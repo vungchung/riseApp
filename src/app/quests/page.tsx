@@ -9,11 +9,15 @@ import { MOCK_QUESTS } from "@/lib/data";
 import QuestsOverview from "@/components/quests-overview";
 import { cn } from "@/lib/utils";
 import { MANDATORY_QUEST_ID } from "@/lib/constants";
+import { PageHeader } from '@/components/page-header';
 
 function DailyQuestTimer() {
   const [timeLeft, setTimeLeft] = useState('');
+  const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
+    setIsClient(true);
+    
     const calculateTimeLeft = () => {
       const now = new Date();
       const tomorrow = new Date(now);
@@ -29,13 +33,27 @@ function DailyQuestTimer() {
       return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
     };
 
-    setTimeLeft(calculateTimeLeft());
     const interval = setInterval(() => {
       setTimeLeft(calculateTimeLeft());
     }, 1000);
 
+    // Set initial value
+    setTimeLeft(calculateTimeLeft());
+
     return () => clearInterval(interval);
   }, []);
+
+  if (!isClient) {
+    return (
+        <Card className="bg-card/80 border-destructive/50 backdrop-blur-sm text-center py-12">
+            <CardContent className="p-4 pt-4">
+                <Timer className="w-12 h-12 text-destructive mx-auto mb-4"/>
+                <h3 className="text-xl font-headline font-bold text-destructive">Daily Mandate Completed</h3>
+                <p className="text-muted-foreground mt-2">Your mandatory quest is done for today. It will reset soon.</p>
+            </CardContent>
+        </Card>
+    );
+  }
 
   return (
     <Card className="bg-card/80 border-destructive/50 backdrop-blur-sm text-center py-12">
@@ -60,9 +78,13 @@ export default function QuestsPage() {
 
   return (
     <div className="container mx-auto p-4 sm:p-6 lg:p-8 space-y-8">
+        <PageHeader
+            title="Quests"
+            description="Accept daily challenges to earn XP and level up."
+        />
       <div>
-        <h1 className="text-3xl font-bold font-headline mb-2">Active Quests</h1>
-        <p className="text-muted-foreground">Your currently accepted daily challenges. The mandatory quest resets daily.</p>
+        <h2 className="text-2xl font-bold font-headline mb-2">Active Quests</h2>
+        <p className="text-muted-foreground mb-4">Your currently accepted challenges. The mandatory quest resets daily.</p>
         <div className="mt-4">
             {quests.length > 0 ? (
                 <QuestsOverview quests={quests} />

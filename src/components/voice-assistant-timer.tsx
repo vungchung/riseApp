@@ -38,11 +38,13 @@ export function VoiceAssistantTimer() {
   const [isActive, setIsActive] = useState(false);
   const [isListening, setIsListening] = useState(false);
   const [isSupported, setIsSupported] = useState(true);
+  const [isClient, setIsClient] = useState(false);
   const recognitionRef = useRef<SpeechRecognition | null>(null);
   const errorOccurredRef = useRef(false);
   const { toast } = useToast();
 
   useEffect(() => {
+    setIsClient(true);
     // Check for browser support on component mount
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (!SpeechRecognition || !window.speechSynthesis) {
@@ -80,23 +82,30 @@ export function VoiceAssistantTimer() {
     };
     
     recognition.onend = () => {
-        // Only restart if listening was active and no error occurred
-        if(isListening && !errorOccurredRef.current){
-            recognition.start(); 
+        if (isListening && !errorOccurredRef.current) {
+            try {
+                recognition.start();
+            } catch (e) {
+                // This can happen if the browser is closed or permissions change
+                console.error("Error restarting recognition:", e);
+                setIsListening(false);
+            }
         } else {
             setIsListening(false);
         }
-        errorOccurredRef.current = false; // Reset error flag
-    }
+        errorOccurredRef.current = false;
+    };
 
     recognitionRef.current = recognition;
 
     // Cleanup function to stop recognition if component unmounts
     return () => {
         if (recognitionRef.current) {
+            recognitionRef.current.onend = null; // Prevent restart on unmount
             recognitionRef.current.stop();
         }
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   
   useEffect(() => {
@@ -157,9 +166,12 @@ export function VoiceAssistantTimer() {
 
   const toggleListen = () => {
     if (!isSupported || !recognitionRef.current) return;
-    if (isListening) {
-      recognitionRef.current.stop();
-      setIsListening(false);
+    const wasListening = isListening;
+
+    if (wasListening) {
+        errorOccurredRef.current = true; // Manually stop restart
+        recognitionRef.current.stop();
+        setIsListening(false);
     } else {
       try {
         errorOccurredRef.current = false;
@@ -182,6 +194,21 @@ export function VoiceAssistantTimer() {
     setIsActive(false);
     setTime(0);
   };
+
+  if (!isClient) {
+    // Render a placeholder on the server and initial client render
+    return (
+       <div className="space-y-6 flex flex-col items-center">
+            <Card className="w-full max-w-md">
+                <CardContent className="p-6">
+                    <p className="text-center text-6xl font-mono tracking-tighter text-foreground font-bold">
+                        00 : 00 : 00
+                    </p>
+                </CardContent>
+            </Card>
+        </div>
+    );
+  }
 
   if (!isSupported) {
     return (

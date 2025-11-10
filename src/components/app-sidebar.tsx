@@ -28,7 +28,7 @@ const navItems = [
 
 export function AppSidebar() {
   const pathname = usePathname();
-  const { userProfile } = useGame();
+  const { userProfile, isLoading } = useGame();
 
   const getAvatarForRank = (rank: 'E' | 'D' | 'C' | 'B' | 'A' | 'S') => {
     const rankAvatars: Record<typeof rank, string> = {
@@ -76,7 +76,7 @@ export function AppSidebar() {
           ))}
         </SidebarMenu>
       </SidebarContent>
-     {userProfile && (
+     {userProfile && !isLoading && (
         <SidebarFooter className="p-4">
             <Link href="/profile">
                 <div className="flex items-center gap-3 p-2 rounded-lg hover:bg-muted">

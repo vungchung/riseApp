@@ -6,12 +6,13 @@ import { useToast } from '@/hooks/use-toast';
 import { MANDATORY_QUEST_ID } from '@/lib/constants';
 
 interface GameState {
-  userProfile: UserProfile;
+  userProfile: UserProfile | null;
   quests: Quest[];
   lastDailyQuestCompletionDate: string | null;
 }
 
-interface GameContextType extends GameState {
+interface GameContextType extends Omit<GameState, 'userProfile'> {
+  userProfile: UserProfile | null;
   updateUserProfile: (data: Partial<UserProfile>) => void;
   addDailyQuest: (questId: string) => void;
   updateTask: (questId: string, taskIndex: number, completed: boolean) => void;
@@ -29,17 +30,15 @@ const getTodayDateString = () => {
 }
 
 export const GameProvider = ({ children }: { children: React.ReactNode }) => {
-  const [userProfile, setUserProfile] = useState<UserProfile>(initialProfile);
+  const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [quests, setQuests] = useState<Quest[]>([]);
   const [lastDailyQuestCompletionDate, setLastDailyQuestCompletionDate] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const { toast } = useToast();
 
-  const loadGameState = useCallback(() => {
-    if (isServer) {
-        return;
-    };
-    
+  useEffect(() => {
+    if (isServer) return;
+
     try {
       const savedStateRaw = localStorage.getItem('gameState');
       const mandatoryQuest = MOCK_QUESTS.find(q => q.id === MANDATORY_QUEST_ID)!;
@@ -54,13 +53,15 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
         if (savedState.lastDailyQuestCompletionDate && savedState.lastDailyQuestCompletionDate < today) {
             setLastDailyQuestCompletionDate(null);
             const activeQuestsWithoutDaily = savedState.quests.filter(q => q.id !== MANDATORY_QUEST_ID);
-            setQuests([mandatoryQuest, ...activeQuestsWithoutDaily]);
+             const resetMandatoryQuest = { ...mandatoryQuest, tasks: mandatoryQuest.tasks.map(t => ({ ...t, completed: false })) };
+            setQuests([resetMandatoryQuest, ...activeQuestsWithoutDaily]);
         } else {
             setLastDailyQuestCompletionDate(savedState.lastDailyQuestCompletionDate);
             // Ensure mandatory quest is always present if not completed today
             const hasMandatory = savedState.quests.some(q => q.id === MANDATORY_QUEST_ID);
             if (!hasMandatory && savedState.lastDailyQuestCompletionDate !== today) {
-                 setQuests([mandatoryQuest, ...savedState.quests]);
+                 const resetMandatoryQuest = { ...mandatoryQuest, tasks: mandatoryQuest.tasks.map(t => ({ ...t, completed: false })) };
+                 setQuests([resetMandatoryQuest, ...savedState.quests]);
             } else {
                  setQuests(savedState.quests);
             }
@@ -68,26 +69,25 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
       } else {
         // First time load
         setUserProfile(initialProfile);
-        setQuests([mandatoryQuest]);
+        const resetMandatoryQuest = { ...mandatoryQuest, tasks: mandatoryQuest.tasks.map(t => ({ ...t, completed: false })) };
+        setQuests([resetMandatoryQuest]);
         setLastDailyQuestCompletionDate(null);
       }
-
     } catch (error) {
       console.error("Failed to load game state from localStorage", error);
       setUserProfile(initialProfile);
       const mandatoryQuest = MOCK_QUESTS.find(q => q.id === MANDATORY_QUEST_ID);
-      setQuests(mandatoryQuest ? [mandatoryQuest] : []);
+      if (mandatoryQuest) {
+        const resetMandatoryQuest = { ...mandatoryQuest, tasks: mandatoryQuest.tasks.map(t => ({ ...t, completed: false })) };
+        setQuests([resetMandatoryQuest]);
+      }
     } finally {
       setIsLoading(false);
     }
   }, []);
-
-  useEffect(() => {
-    loadGameState();
-  }, [loadGameState]);
   
   useEffect(() => {
-    if (!isLoading) {
+    if (!isLoading && !isServer) {
         const gameState: GameState = { userProfile, quests, lastDailyQuestCompletionDate };
         localStorage.setItem('gameState', JSON.stringify(gameState));
     }
@@ -95,7 +95,7 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
 
   const updateUserProfile = (data: Partial<UserProfile>) => {
     setUserProfile(prevProfile => {
-      if (!prevProfile) return initialProfile;
+      if (!prevProfile) return null;
       return { ...prevProfile, ...data };
     });
   };
@@ -137,7 +137,7 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
       
       const newProfile: UserProfile = {
         ...userProfile,
-        xp: newXp % xpToNextLevel,
+        xp: newXp >= xpToNextLevel ? newXp - xpToNextLevel : newXp,
         level: newLevel,
         xpToNextLevel: xpToNextLevel,
         rank: newRank,

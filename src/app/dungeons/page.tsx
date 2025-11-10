@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { PageHeader } from '@/components/page-header';
 import { dungeons } from '@/lib/data';
 import type { Dungeon } from '@/lib/types';
@@ -15,10 +15,11 @@ import {
 } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Flame, Shield, Star, CheckCircle } from 'lucide-react';
+import { Flame, Shield, Star, CheckCircle, Dumbbell } from 'lucide-react';
 import Image from 'next/image';
 import { Progress } from '@/components/ui/progress';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
+import { useGame } from '@/components/providers/game-provider';
 
 function getDifficultyBadge(
   difficulty: Dungeon['difficulty']
@@ -48,37 +49,66 @@ function getDungeonImage(difficulty: Dungeon['difficulty']) {
     }
 }
 
+// Simple deterministic random number generator for workout consistency
+const seededRandom = (seed: number) => {
+    const x = Math.sin(seed) * 10000;
+    return x - Math.floor(x);
+}
+
+const getDailyWorkout = (dungeonTitle: string, day: number) => {
+    const seed = dungeonTitle.length + day;
+    const repCount = 5 + Math.floor(seededRandom(seed) * 11); // 5 to 15 reps
+    const setCount = 3 + Math.floor(seededRandom(seed * 2) * 3); // 3 to 5 sets
+    
+    let exercise = 'Push-ups';
+    if (dungeonTitle.toLowerCase().includes('leg')) {
+        exercise = 'Squats';
+    } else if (dungeonTitle.toLowerCase().includes('body')) {
+        const exercises = ['Push-ups', 'Squats', 'Lunges', 'Plank (30s)'];
+        exercise = exercises[Math.floor(seededRandom(seed * 3) * exercises.length)];
+    }
+
+    return `${setCount} sets of ${repCount} ${exercise}`;
+};
+
 
 function DungeonCard({
   dungeon,
-  isActive,
-  isMastered,
   onStart,
-  activeDungeonId,
-  progress,
   onProgress,
   onMaster,
 }: {
   dungeon: Dungeon;
-  isActive: boolean;
-  isMastered: boolean;
   onStart: (id: string) => void;
-  activeDungeonId: string | null;
-  progress: number;
   onProgress: () => void;
-  onMaster: (id: string) => void;
+  onMaster: (id: string, badgeId: string) => void;
 }) {
+  const { 
+    activeDungeonId,
+    masteredDungeons, 
+    dungeonProgress, 
+    lastDungeonProgressDate 
+  } = useGame();
+
+  const isActive = activeDungeonId === dungeon.id;
+  const isMastered = masteredDungeons.includes(dungeon.id);
   const { variant, icon: Icon } = getDifficultyBadge(dungeon.difficulty);
   const dungeonImage = getDungeonImage(dungeon.difficulty);
   const isAnotherDungeonActive = activeDungeonId !== null && !isActive;
+
+  const today = new Date().toISOString().split('T')[0];
+  const isProgressMadeToday = lastDungeonProgressDate === today;
+
+  const progress = isActive ? dungeonProgress : 0;
   const isCompleted = progress >= dungeon.duration;
+  const dailyWorkout = isActive ? getDailyWorkout(dungeon.title, progress) : null;
 
   const handleButtonClick = () => {
     if (isMastered) return;
     if (isActive) {
       if (isCompleted) {
-        onMaster(dungeon.id);
-      } else {
+        onMaster(dungeon.id, dungeon.badgeId);
+      } else if (!isProgressMadeToday) {
         onProgress();
       }
     } else if (!activeDungeonId) {
@@ -90,9 +120,10 @@ function DungeonCard({
     if (isMastered) return 'Mastered';
     if (isActive) {
       if (isCompleted) return 'Master Dungeon';
+      if (isProgressMadeToday) return 'Day Complete';
       return 'Complete Day';
     }
-    if (isAnotherDungeonActive) return 'Another Dungeon Active';
+    if (isAnotherDungeonActive) return 'Dungeon in Progress';
     return 'Start Challenge';
   };
 
@@ -123,9 +154,18 @@ function DungeonCard({
       <CardContent className="flex-grow">
         <CardDescription>{dungeon.description}</CardDescription>
         {isActive && (
-            <div className='mt-4'>
-                <p className='text-sm text-muted-foreground mb-1'>Progress: Day {progress} of {dungeon.duration}</p>
-                <Progress value={(progress / dungeon.duration) * 100} className="h-2" />
+            <div className='mt-4 space-y-4'>
+                <div>
+                  <p className='text-sm text-muted-foreground mb-1'>Today's Task:</p>
+                  <div className='flex items-center gap-2 p-3 rounded-md bg-muted/50'>
+                    <Dumbbell className='w-4 h-4 text-accent'/>
+                    <p className='font-mono text-sm font-semibold'>{dailyWorkout}</p>
+                  </div>
+                </div>
+                <div>
+                    <p className='text-sm text-muted-foreground mb-1'>Progress: Day {progress} of {dungeon.duration}</p>
+                    <Progress value={(progress / dungeon.duration) * 100} className="h-2" />
+                </div>
             </div>
         )}
       </CardContent>
@@ -133,7 +173,7 @@ function DungeonCard({
         <Button
           className="w-full"
           onClick={handleButtonClick}
-          disabled={isMastered || isAnotherDungeonActive}
+          disabled={isMastered || isAnotherDungeonActive || (isActive && isProgressMadeToday && !isCompleted)}
           variant={isCompleted ? 'default' : isActive ? 'outline' : 'default'}
         >
           {isMastered && <CheckCircle className="mr-2" />}
@@ -145,27 +185,14 @@ function DungeonCard({
 }
 
 export default function DungeonsPage() {
-  const [activeDungeonId, setActiveDungeonId] = useState<string | null>(null);
-  const [masteredDungeons, setMasteredDungeons] = useState<string[]>([]);
-  const [dungeonProgress, setDungeonProgress] = useState(0);
+  const { 
+    startDungeon, 
+    progressDungeon, 
+    masterDungeon
+  } = useGame();
   
   const masteryPrograms = dungeons.filter(d => d.type === 'Mastery');
   const transformationPrograms = dungeons.filter(d => d.type === 'Transformation');
-
-  const handleStartDungeon = (id: string) => {
-    setActiveDungeonId(id);
-    setDungeonProgress(1); // Start at day 1
-  }
-  
-  const handleProgress = () => {
-    setDungeonProgress(p => p + 1);
-  }
-  
-  const handleMasterDungeon = (id: string) => {
-    setMasteredDungeons(prev => [...prev, id]);
-    setActiveDungeonId(null);
-    setDungeonProgress(0);
-  }
 
   return (
     <div className="container mx-auto p-4 sm:p-6 lg:p-8">
@@ -182,13 +209,9 @@ export default function DungeonsPage() {
                     <DungeonCard 
                         key={dungeon.id} 
                         dungeon={dungeon} 
-                        isActive={activeDungeonId === dungeon.id}
-                        isMastered={masteredDungeons.includes(dungeon.id)}
-                        onStart={handleStartDungeon}
-                        activeDungeonId={activeDungeonId}
-                        progress={activeDungeonId === dungeon.id ? dungeonProgress : 0}
-                        onProgress={handleProgress}
-                        onMaster={handleMasterDungeon}
+                        onStart={startDungeon}
+                        onProgress={progressDungeon}
+                        onMaster={masterDungeon}
                     />
                 ))}
             </div>
@@ -200,13 +223,9 @@ export default function DungeonsPage() {
                      <DungeonCard 
                         key={dungeon.id} 
                         dungeon={dungeon} 
-                        isActive={activeDungeonId === dungeon.id}
-                        isMastered={masteredDungeons.includes(dungeon.id)}
-                        onStart={handleStartDungeon}
-                        activeDungeonId={activeDungeonId}
-                        progress={activeDungeonId === dungeon.id ? dungeonProgress : 0}
-                        onProgress={handleProgress}
-                        onMaster={handleMasterDungeon}
+                        onStart={startDungeon}
+                        onProgress={progressDungeon}
+                        onMaster={masterDungeon}
                     />
                 ))}
             </div>

@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { PageHeader } from '@/components/page-header';
-import { badges } from '@/lib/data';
+import { badges as allBadges } from '@/lib/data';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
   Card,
@@ -38,7 +38,7 @@ function getRankColor(rank: 'E' | 'D' | 'C' | 'B' | 'A' | 'S') {
 }
 
 export default function ProfilePage() {
-  const { userProfile, updateUserProfile } = useGame();
+  const { userProfile, updateUserProfile, unlockedBadges } = useGame();
   const [isSetupOpen, setIsSetupOpen] = useState(false);
 
   const handleProfileSave = (data: Partial<UserProfile>) => {
@@ -60,6 +60,8 @@ export default function ProfilePage() {
   if (!userProfile) {
     return null; // Or a loading spinner
   }
+
+  const displayedBadges = allBadges.filter(b => unlockedBadges.includes(b.id));
   
   return (
     <div className="container mx-auto p-4 sm:p-6 lg:p-8">
@@ -131,20 +133,29 @@ export default function ProfilePage() {
 
       <section>
         <h3 className="text-2xl font-headline mb-4">Unlocked Badges</h3>
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-          {badges.map(({ id, name, description, Icon }) => (
-            <Card
-              key={id}
-              className="flex flex-col items-center p-4 sm:p-6 text-center hover:bg-muted/50 transition-colors"
-            >
-              <div className="p-3 sm:p-4 bg-accent/10 rounded-full mb-3 border border-accent/50">
-                <Icon className="h-8 w-8 sm:h-10 sm:w-10 text-accent glow-accent" />
-              </div>
-              <p className="font-semibold text-sm sm:text-base">{name}</p>
-              <p className="text-xs text-muted-foreground">{description}</p>
-            </Card>
-          ))}
-        </div>
+        {displayedBadges.length > 0 ? (
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            {displayedBadges.map(({ id, name, description, Icon }) => (
+              <Card
+                key={id}
+                className="flex flex-col items-center p-4 sm:p-6 text-center hover:bg-muted/50 transition-colors"
+              >
+                <div className="p-3 sm:p-4 bg-accent/10 rounded-full mb-3 border border-accent/50">
+                  <Icon className="h-8 w-8 sm:h-10 sm:w-10 text-accent glow-accent" />
+                </div>
+                <p className="font-semibold text-sm sm:text-base">{name}</p>
+                <p className="text-xs text-muted-foreground">{description}</p>
+              </Card>
+            ))}
+          </div>
+        ) : (
+          <Card className='text-center py-12'>
+            <CardContent>
+              <h3 className="text-xl font-headline font-bold">No Badges Yet</h3>
+              <p className="text-muted-foreground mt-2">Complete quests and dungeons to earn badges.</p>
+            </CardContent>
+          </Card>
+        )}
       </section>
     </div>
   );

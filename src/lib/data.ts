@@ -102,7 +102,7 @@ export const dungeons: Dungeon[] = [
     duration: 30,
     difficulty: 'Beginner',
     type: 'Mastery',
-    badge: 'Push-up Master'
+    badgeId: 'dungeon-mastery-pushup'
   },
   {
     id: 'dungeon-2',
@@ -111,7 +111,7 @@ export const dungeons: Dungeon[] = [
     duration: 30,
     difficulty: 'Intermediate',
     type: 'Mastery',
-    badge: 'Squat Emperor'
+    badgeId: 'dungeon-mastery-legday'
   },
    {
     id: 'dungeon-3',
@@ -120,7 +120,7 @@ export const dungeons: Dungeon[] = [
     duration: 30,
     difficulty: 'Beginner',
     type: 'Transformation',
-    badge: 'Solid Foundation'
+    badgeId: 'dungeon-transform-foundation'
   },
   {
     id: 'dungeon-4',
@@ -129,7 +129,7 @@ export const dungeons: Dungeon[] = [
     duration: 60,
     difficulty: 'Intermediate',
     type: 'Transformation',
-    badge: 'Body Sculptor'
+    badgeId: 'dungeon-transform-sculpt'
   },
    {
     id: 'dungeon-5',
@@ -138,14 +138,18 @@ export const dungeons: Dungeon[] = [
     duration: 90,
     difficulty: 'Advanced',
     type: 'Transformation',
-    badge: 'True Athlete'
+    badgeId: 'dungeon-transform-athlete'
   },
 ];
 
 export const badges: Badge[] = [
     { id: 'first-quest', name: 'Quest Novice', description: 'Completed your first quest.', Icon: Star },
     { id: 'streak-7', name: 'Week Warrior', description: 'Maintained a 7-day workout streak.', Icon: Zap },
-    { id: 'dungeon-beginner', name: 'Dungeon Crawler', description: 'Completed a Beginner Dungeon.', Icon: Shield },
+    { id: 'dungeon-mastery-pushup', name: 'Push-up Master', description: 'Completed Push-Up Mastery.', Icon: Shield },
+    { id: 'dungeon-mastery-legday', name: 'Squat Emperor', description: 'Completed Leg Day Domination.', Icon: Shield },
+    { id: 'dungeon-transform-foundation', name: 'Solid Foundation', description: 'Completed All Body Foundation.', Icon: Award },
+    { id: 'dungeon-transform-sculpt', name: 'Body Sculptor', description: 'Completed Full Body Sculpt.', Icon: Award },
+    { id: 'dungeon-transform-athlete', name: 'True Athlete', description: 'Completed Athlete Transformation.', Icon: Crown },
     { id: 'rank-c', name: 'C-Rank Hunter', description: 'Achieved the rank of C.', Icon: Award },
     { id: 'level-50', name: 'Level 50', description: 'Reached level 50.', Icon: Crown },
 ];

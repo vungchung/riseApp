@@ -26,7 +26,7 @@ export type Dungeon = {
   duration: number; // in days
   difficulty: 'Beginner' | 'Intermediate' | 'Advanced';
   type: 'Mastery' | 'Transformation';
-  badge: string;
+  badgeId: string;
 };
 
 export type Badge = {

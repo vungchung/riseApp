@@ -9,6 +9,11 @@ interface GameState {
   userProfile: UserProfile | null;
   quests: Quest[];
   lastDailyQuestCompletionDate: string | null;
+  activeDungeonId: string | null;
+  masteredDungeons: string[];
+  dungeonProgress: number;
+  lastDungeonProgressDate: string | null;
+  unlockedBadges: string[];
 }
 
 interface GameContextType extends Omit<GameState, 'userProfile'> {
@@ -17,6 +22,9 @@ interface GameContextType extends Omit<GameState, 'userProfile'> {
   addDailyQuest: (questId: string) => void;
   updateTask: (questId: string, taskIndex: number, completed: boolean) => void;
   claimQuestReward: (questId: string) => void;
+  startDungeon: (id: string) => void;
+  progressDungeon: () => void;
+  masterDungeon: (id: string, badgeId: string) => void;
   isLoading: boolean;
 }
 
@@ -33,8 +41,46 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [quests, setQuests] = useState<Quest[]>([]);
   const [lastDailyQuestCompletionDate, setLastDailyQuestCompletionDate] = useState<string | null>(null);
+  
+  // Dungeon State
+  const [activeDungeonId, setActiveDungeonId] = useState<string | null>(null);
+  const [masteredDungeons, setMasteredDungeons] = useState<string[]>([]);
+  const [dungeonProgress, setDungeonProgress] = useState(0);
+  const [lastDungeonProgressDate, setLastDungeonProgressDate] = useState<string | null>(null);
+
+  // Badges State
+  const [unlockedBadges, setUnlockedBadges] = useState<string[]>([]);
+
   const [isLoading, setIsLoading] = useState(true);
   const { toast } = useToast();
+  
+  const resetDailyStates = useCallback((state: GameState): GameState => {
+    const today = getTodayDateString();
+    let updatedState = { ...state };
+
+    // Reset daily quest if completed on a previous day
+    if (state.lastDailyQuestCompletionDate && state.lastDailyQuestCompletionDate < today) {
+      updatedState.lastDailyQuestCompletionDate = null;
+      // Remove all non-mandatory quests
+      const mandatoryQuest = MOCK_QUESTS.find(q => q.id === MANDATORY_QUEST_ID)!;
+      const resetMandatoryQuest = { ...mandatoryQuest, tasks: mandatoryQuest.tasks.map(t => ({ ...t, completed: false })) };
+      updatedState.quests = [resetMandatoryQuest];
+    } else {
+       const hasMandatory = state.quests.some(q => q.id === MANDATORY_QUEST_ID);
+       if (!hasMandatory && state.lastDailyQuestCompletionDate !== today) {
+           const mandatoryQuest = MOCK_QUESTS.find(q => q.id === MANDATORY_QUEST_ID)!;
+           const resetMandatoryQuest = { ...mandatoryQuest, tasks: mandatoryQuest.tasks.map(t => ({ ...t, completed: false })) };
+           updatedState.quests = [resetMandatoryQuest, ...state.quests];
+       }
+    }
+
+    // Reset dungeon progress date if it was from a previous day
+    if(state.lastDungeonProgressDate && state.lastDungeonProgressDate < today) {
+        updatedState.lastDungeonProgressDate = null;
+    }
+
+    return updatedState;
+  }, []);
 
   useEffect(() => {
     if (isServer) return;
@@ -44,34 +90,33 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
       const mandatoryQuest = MOCK_QUESTS.find(q => q.id === MANDATORY_QUEST_ID)!;
 
       if (savedStateRaw) {
-        const savedState: GameState = JSON.parse(savedStateRaw);
+        let savedState: GameState = JSON.parse(savedStateRaw);
         
-        setUserProfile(savedState.userProfile);
+        // Ensure all state fields are present
+        savedState.unlockedBadges = savedState.unlockedBadges || [];
+
+        const newState = resetDailyStates(savedState);
         
-        const today = getTodayDateString();
-        // If the daily quest was completed on a previous day, reset it.
-        if (savedState.lastDailyQuestCompletionDate && savedState.lastDailyQuestCompletionDate < today) {
-            setLastDailyQuestCompletionDate(null);
-            const activeQuestsWithoutDaily = savedState.quests.filter(q => q.id !== MANDATORY_QUEST_ID);
-             const resetMandatoryQuest = { ...mandatoryQuest, tasks: mandatoryQuest.tasks.map(t => ({ ...t, completed: false })) };
-            setQuests([resetMandatoryQuest, ...activeQuestsWithoutDaily]);
-        } else {
-            setLastDailyQuestCompletionDate(savedState.lastDailyQuestCompletionDate);
-            // Ensure mandatory quest is always present if not completed today
-            const hasMandatory = savedState.quests.some(q => q.id === MANDATORY_QUEST_ID);
-            if (!hasMandatory && savedState.lastDailyQuestCompletionDate !== today) {
-                 const resetMandatoryQuest = { ...mandatoryQuest, tasks: mandatoryQuest.tasks.map(t => ({ ...t, completed: false })) };
-                 setQuests([resetMandatoryQuest, ...savedState.quests]);
-            } else {
-                 setQuests(savedState.quests);
-            }
-        }
+        setUserProfile(newState.userProfile);
+        setQuests(newState.quests);
+        setLastDailyQuestCompletionDate(newState.lastDailyQuestCompletionDate);
+        setActiveDungeonId(newState.activeDungeonId);
+        setMasteredDungeons(newState.masteredDungeons);
+        setDungeonProgress(newState.dungeonProgress);
+        setLastDungeonProgressDate(newState.lastDungeonProgressDate);
+        setUnlockedBadges(newState.unlockedBadges);
+
       } else {
         // First time load
         setUserProfile(initialProfile);
         const resetMandatoryQuest = { ...mandatoryQuest, tasks: mandatoryQuest.tasks.map(t => ({ ...t, completed: false })) };
         setQuests([resetMandatoryQuest]);
         setLastDailyQuestCompletionDate(null);
+        setActiveDungeonId(null);
+        setMasteredDungeons([]);
+        setDungeonProgress(0);
+        setLastDungeonProgressDate(null);
+        setUnlockedBadges([]);
       }
     } catch (error) {
       console.error("Failed to load game state from localStorage", error);
@@ -84,14 +129,23 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [resetDailyStates]);
   
   useEffect(() => {
     if (!isLoading && !isServer) {
-        const gameState: GameState = { userProfile, quests, lastDailyQuestCompletionDate };
+        const gameState: GameState = { 
+          userProfile, 
+          quests, 
+          lastDailyQuestCompletionDate,
+          activeDungeonId,
+          masteredDungeons,
+          dungeonProgress,
+          lastDungeonProgressDate,
+          unlockedBadges
+        };
         localStorage.setItem('gameState', JSON.stringify(gameState));
     }
-  }, [userProfile, quests, lastDailyQuestCompletionDate, isLoading]);
+  }, [userProfile, quests, lastDailyQuestCompletionDate, isLoading, activeDungeonId, masteredDungeons, dungeonProgress, lastDungeonProgressDate, unlockedBadges]);
 
   const updateUserProfile = (data: Partial<UserProfile>) => {
     setUserProfile(prevProfile => {
@@ -159,8 +213,56 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
     }
   };
 
+  const startDungeon = (id: string) => {
+    setActiveDungeonId(id);
+    setDungeonProgress(1); // Start at day 1
+    toast({ title: "Dungeon Started!", description: "Your long-term challenge begins now."});
+  }
+  
+  const progressDungeon = () => {
+    setDungeonProgress(p => p + 1);
+    setLastDungeonProgressDate(getTodayDateString());
+  }
+
+  const addBadge = useCallback((badgeId: string) => {
+    setUnlockedBadges(prev => {
+        if (prev.includes(badgeId)) return prev;
+        return [...prev, badgeId];
+    });
+    toast({ title: "Badge Unlocked!", description: "You've earned a new badge for your achievements." });
+  }, [toast]);
+  
+  const masterDungeon = (id: string, badgeId: string) => {
+    setMasteredDungeons(prev => [...prev, id]);
+    setActiveDungeonId(null);
+    setDungeonProgress(0);
+    setLastDungeonProgressDate(null);
+    
+    if (badgeId) {
+        addBadge(badgeId);
+    }
+  }
+
+
   return (
-    <GameContext.Provider value={{ userProfile, quests, lastDailyQuestCompletionDate, updateUserProfile, addDailyQuest, updateTask, claimQuestReward, isLoading }}>
+    <GameContext.Provider value={{ 
+      userProfile, 
+      quests, 
+      lastDailyQuestCompletionDate, 
+      activeDungeonId,
+      masteredDungeons,
+      dungeonProgress,
+      lastDungeonProgressDate,
+      unlockedBadges,
+      updateUserProfile, 
+      addDailyQuest, 
+      updateTask, 
+      claimQuestReward, 
+      startDungeon,
+      progressDungeon,
+      masterDungeon,
+      isLoading 
+      }}>
       {children}
     </GameContext.Provider>
   );

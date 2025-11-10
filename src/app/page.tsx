@@ -42,8 +42,20 @@ export default function DashboardPage() {
   const handleProfileSave = (data: Partial<UserProfile>) => {
     updateUserProfile(data);
   };
+  
+  const getAvatarForRank = (rank: 'E' | 'D' | 'C' | 'B' | 'A' | 'S') => {
+    const rankAvatars: Record<typeof rank, string> = {
+      'E': 'https://i.imgur.com/OSGLHe1.png',
+      'D': 'https://i.imgur.com/8J0taDb.png',
+      'C': 'https://i.imgur.com/JXrwrnb.png',
+      'B': 'https://i.imgur.com/xyqvf59.png',
+      'A': 'https://i.imgur.com/4ljhQdc.png',
+      'S': 'https://i.imgur.com/179ObB9.png',
+    };
+    return rankAvatars[rank] || rankAvatars['E'];
+  }
 
-  const avatarImage = PlaceHolderImages.find(img => img.id === 'avatar');
+  const workoutImage = PlaceHolderImages.find(img => img.id === 'workout-theme');
 
   if (!userProfile) {
     return null; // or a loading spinner
@@ -66,7 +78,7 @@ export default function DashboardPage() {
         <Card className="md:col-span-3 bg-card/50 backdrop-blur-sm">
           <CardHeader className="flex flex-row items-center gap-4">
             <Avatar className="h-16 w-16 border-2 border-primary glow-primary">
-              {avatarImage && <AvatarImage src={avatarImage.imageUrl} alt={userProfile.name} />}
+              <AvatarImage src={getAvatarForRank(userProfile.rank)} alt={userProfile.name} />
               <AvatarFallback>{userProfile.name.charAt(0)}</AvatarFallback>
             </Avatar>
             <div>
@@ -113,11 +125,11 @@ export default function DashboardPage() {
               <Card key={dungeon.id} className="overflow-hidden transform hover:scale-105 transition-transform duration-300">
                 <Link href="/dungeons">
                   <div className="relative h-48 w-full">
-                     {dungeonImage && <Image
-                      src={dungeonImage.imageUrl}
+                     {workoutImage && <Image
+                      src={workoutImage.imageUrl}
                       alt={dungeon.title}
                       fill
-                      data-ai-hint={dungeonImage.imageHint}
+                      data-ai-hint={workoutImage.imageHint}
                       className="object-cover"
                     />}
                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent" />

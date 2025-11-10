@@ -35,6 +35,20 @@ function getDifficultyBadge(
   }
 }
 
+function getDungeonImage(difficulty: Dungeon['difficulty']) {
+    switch (difficulty) {
+        case 'Beginner':
+            return PlaceHolderImages.find(img => img.id === 'dungeon-beginner');
+        case 'Intermediate':
+            return PlaceHolderImages.find(img => img.id === 'dungeon-intermediate');
+        case 'Advanced':
+            return PlaceHolderImages.find(img => img.id === 'dungeon-advanced');
+        default:
+            return PlaceHolderImages.find(img => img.id === 'dungeon-beginner');
+    }
+}
+
+
 function DungeonCard({
   dungeon,
   isActive,
@@ -49,7 +63,7 @@ function DungeonCard({
   activeDungeon: string | null;
 }) {
   const { variant, icon: Icon } = getDifficultyBadge(dungeon.difficulty);
-  const dungeonImage = PlaceHolderImages.find((img) => img.id === dungeon.id);
+  const dungeonImage = getDungeonImage(dungeon.difficulty);
 
   return (
     <Card className="flex flex-col overflow-hidden transition-all duration-300 hover:border-primary/50">

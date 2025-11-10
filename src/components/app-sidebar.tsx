@@ -15,8 +15,8 @@ import { AppLogo } from '@/components/icons';
 import { BarChart3, Flame, LayoutGrid, Swords, User, Shield } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
-import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { useGame } from '@/components/providers/game-provider';
+import Image from 'next/image';
 
 const navItems = [
   { href: '/', label: 'Dashboard', icon: LayoutGrid },
@@ -30,13 +30,25 @@ const navItems = [
 export function AppSidebar() {
   const pathname = usePathname();
   const { userProfile } = useGame();
-  const avatarImage = PlaceHolderImages.find(img => img.id === 'avatar');
+
+  const getAvatarForRank = (rank: 'E' | 'D' | 'C' | 'B' | 'A' | 'S') => {
+    const rankAvatars: Record<typeof rank, string> = {
+      'E': 'https://i.imgur.com/OSGLHe1.png',
+      'D': 'https://i.imgur.com/8J0taDb.png',
+      'C': 'https://i.imgur.com/JXrwrnb.png',
+      'B': 'https://i.imgur.com/xyqvf59.png',
+      'A': 'https://i.imgur.com/4ljhQdc.png',
+      'S': 'https://i.imgur.com/179ObB9.png',
+    };
+    return rankAvatars[rank] || rankAvatars['E'];
+  }
+
 
   return (
     <Sidebar className="border-r border-border/20">
       <SidebarHeader className="p-4">
         <Link href="/" className="flex items-center gap-2">
-          <AppLogo className="w-8 h-8 text-primary glow-primary" />
+          <Image src="https://i.imgur.com/mgVlBQj.png" alt="RISE Logo" width={32} height={32} className="w-8 h-8 text-primary glow-primary" />
           <h1 className="text-xl font-headline font-semibold">
             RISE
           </h1>
@@ -70,7 +82,7 @@ export function AppSidebar() {
             <Link href="/profile">
                 <div className="flex items-center gap-3 p-2 rounded-lg hover:bg-muted">
                     <Avatar className="h-10 w-10 border-2 border-accent">
-                        {avatarImage && <AvatarImage src={avatarImage.imageUrl} alt={userProfile.name} />}
+                         <AvatarImage src={getAvatarForRank(userProfile.rank)} alt={userProfile.name} />
                         <AvatarFallback>{userProfile.name.charAt(0)}</AvatarFallback>
                     </Avatar>
                     <div>

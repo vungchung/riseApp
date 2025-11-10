@@ -1,40 +1,64 @@
 {
   "placeholderImages": [
     {
-      "id": "dungeon-1",
-      "description": "Man doing pushups.",
-      "imageUrl": "https://images.unsplash.com/photo-1571019614242-c5c5792c6b09?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxwdXNoJTIwdXB8ZW58MHx8fHwxNzM0MzM0NzY5fDA&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "push up"
+      "id": "workout-theme",
+      "description": "Main workout theme image.",
+      "imageUrl": "https://i.imgur.com/iutFcTi.jpeg",
+      "imageHint": "shadow soldiers"
     },
     {
-      "id": "dungeon-2",
-      "description": "A person doing squats with a barbell.",
-      "imageUrl": "https://images.unsplash.com/photo-1574680178945-98319db57477?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxzbGVnJTIwZGF5fGVufDB8fHx8MTczNDMzNDgwMXww&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "leg day"
+      "id": "dungeon-beginner",
+      "description": "Beginner dungeon theme.",
+      "imageUrl": "https://i.imgur.com/HzcXBIp.png",
+      "imageHint": "cave warrior"
     },
     {
-      "id": "dungeon-3",
-      "description": "Person working out.",
-      "imageUrl": "https://images.unsplash.com/photo-1517836357463-d25dfeac3438?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxib2R5d2VpZ2h0JTIwZXhlcmNpc2V8ZW58MHx8fHwxNzM0MzM0ODMyfDA&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "bodyweight exercise"
+      "id": "dungeon-intermediate",
+      "description": "Intermediate dungeon theme.",
+      "imageUrl": "https://i.imgur.com/nqpA1UC.png",
+      "imageHint": "cavern battle"
     },
     {
-      "id": "dungeon-4",
-      "description": "Person sculpting their body.",
-      "imageUrl": "https://images.unsplash.com/photo-1581009137052-c40971b514f3?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxyZXNpc3RhbmNlJTIwYmFuZHxlbnwwfHx8fDE3MzQzMzQ4NzB8MA&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "resistance band"
+      "id": "dungeon-advanced",
+      "description": "Advanced dungeon theme.",
+      "imageUrl": "https://i.imgur.com/hsXbHbF.png",
+      "imageHint": "fiery landscape"
     },
     {
-      "id": "dungeon-5",
-      "description": "Athlete running on a track.",
-      "imageUrl": "https://images.unsplash.com/photo-1485965120184-e220f721d03e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxhdGhsZXRlfGVufDB8fHx8MTczNDMzNDkwM3ww&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "athlete"
+      "id": "avatar-e",
+      "description": "E-Rank Avatar",
+      "imageUrl": "https://i.imgur.com/OSGLHe1.png",
+      "imageHint": "hooded figure"
     },
     {
-      "id": "avatar",
-      "description": "A cloaked figure with glowing eyes.",
-      "imageUrl": "https://images.unsplash.com/photo-1722649949654-f568c675f065?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxjbG9ha2VkJTIwZmlndXJlfGVufDB8fHx8MTc2MjM1NjE2Mnww&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "cloaked figure"
+      "id": "avatar-d",
+      "description": "D-Rank Avatar",
+      "imageUrl": "https://i.imgur.com/8J0taDb.png",
+      "imageHint": "glowing eyes"
+    },
+    {
+      "id": "avatar-c",
+      "description": "C-Rank Avatar",
+      "imageUrl": "https://i.imgur.com/JXrwrnb.png",
+      "imageHint": "armored warrior"
+    },
+    {
+      "id": "avatar-b",
+      "description": "B-Rank Avatar",
+      "imageUrl": "https://i.imgur.com/xyqvf59.png",
+      "imageHint": "helmeted warrior"
+    },
+    {
+      "id": "avatar-a",
+      "description": "A-Rank Avatar",
+      "imageUrl": "https://i.imgur.com/4ljhQdc.png",
+      "imageHint": "elite knight"
+    },
+    {
+      "id": "avatar-s",
+      "description": "S-Rank Avatar",
+      "imageUrl": "https://i.imgur.com/179ObB9.png",
+      "imageHint": "formidable warrior"
     }
   ]
 }

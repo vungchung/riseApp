@@ -3,7 +3,6 @@
 import { useState } from 'react';
 import { PageHeader } from '@/components/page-header';
 import { badges } from '@/lib/data';
-import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
   Card,
@@ -41,11 +40,22 @@ function getRankColor(rank: 'E' | 'D' | 'C' | 'B' | 'A' | 'S') {
 export default function ProfilePage() {
   const { userProfile, updateUserProfile } = useGame();
   const [isSetupOpen, setIsSetupOpen] = useState(false);
-  const avatarImage = PlaceHolderImages.find((img) => img.id === 'avatar');
 
   const handleProfileSave = (data: Partial<UserProfile>) => {
     updateUserProfile(data);
   };
+  
+  const getAvatarForRank = (rank: 'E' | 'D' | 'C' | 'B' | 'A' | 'S') => {
+    const rankAvatars: Record<typeof rank, string> = {
+      'E': 'https://i.imgur.com/OSGLHe1.png',
+      'D': 'https://i.imgur.com/8J0taDb.png',
+      'C': 'https://i.imgur.com/JXrwrnb.png',
+      'B': 'https://i.imgur.com/xyqvf59.png',
+      'A': 'https://i.imgur.com/4ljhQdc.png',
+      'S': 'https://i.imgur.com/179ObB9.png',
+    };
+    return rankAvatars[rank] || rankAvatars['E'];
+  }
   
   if (!userProfile) {
     return null; // Or a loading spinner
@@ -65,9 +75,7 @@ export default function ProfilePage() {
       />
       <div className="flex flex-col items-center text-center mb-8">
         <Avatar className="h-32 w-32 mb-4 border-4 border-primary glow-primary">
-          {avatarImage && (
-            <AvatarImage src={avatarImage.imageUrl} alt={userProfile.name} />
-          )}
+          <AvatarImage src={getAvatarForRank(userProfile.rank)} alt={userProfile.name} />
           <AvatarFallback className="text-4xl">
             {userProfile.name.charAt(0)}
           </AvatarFallback>

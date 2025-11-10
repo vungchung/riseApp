@@ -39,6 +39,7 @@ export function VoiceAssistantTimer() {
   const [isListening, setIsListening] = useState(false);
   const [isSupported, setIsSupported] = useState(true);
   const recognitionRef = useRef<SpeechRecognition | null>(null);
+  const errorOccurredRef = useRef(false);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -61,24 +62,42 @@ export function VoiceAssistantTimer() {
 
     recognition.onerror = (event) => {
       console.error('Speech recognition error:', event.error);
+      errorOccurredRef.current = true;
       if(event.error === 'not-allowed' || event.error === 'service-not-allowed') {
         toast({
             variant: 'destructive',
             title: 'Microphone Access Denied',
             description: 'Please enable microphone permissions to use voice commands.',
         });
-        setIsListening(false);
+      } else if (event.error === 'network') {
+        toast({
+            variant: 'destructive',
+            title: 'Network Error',
+            description: 'Speech recognition requires a network connection.',
+        });
       }
+      setIsListening(false);
     };
     
     recognition.onend = () => {
-        if(isListening){
-            recognition.start(); // Restart listening if it was unintentionally stopped
+        // Only restart if listening was active and no error occurred
+        if(isListening && !errorOccurredRef.current){
+            recognition.start(); 
+        } else {
+            setIsListening(false);
         }
+        errorOccurredRef.current = false; // Reset error flag
     }
 
     recognitionRef.current = recognition;
-  }, [isListening, toast]);
+
+    // Cleanup function to stop recognition if component unmounts
+    return () => {
+        if (recognitionRef.current) {
+            recognitionRef.current.stop();
+        }
+    }
+  }, []);
   
   useEffect(() => {
     let interval: NodeJS.Timeout | null = null;
@@ -96,8 +115,12 @@ export function VoiceAssistantTimer() {
 
   const speak = (text: string) => {
     if (!isSupported) return;
-    const utterance = new SpeechSynthesisUtterance(text);
-    window.speechSynthesis.speak(utterance);
+    try {
+        const utterance = new SpeechSynthesisUtterance(text);
+        window.speechSynthesis.speak(utterance);
+    } catch (error) {
+        console.error("Speech synthesis error:", error);
+    }
   };
   
   const formatTime = (seconds: number) => {
@@ -138,8 +161,18 @@ export function VoiceAssistantTimer() {
       recognitionRef.current.stop();
       setIsListening(false);
     } else {
-      recognitionRef.current.start();
-      setIsListening(true);
+      try {
+        errorOccurredRef.current = false;
+        recognitionRef.current.start();
+        setIsListening(true);
+      } catch (err) {
+        console.error("Error starting recognition:", err);
+        toast({
+          variant: 'destructive',
+          title: 'Could not start listening',
+          description: 'Please check your microphone and browser permissions.',
+        });
+      }
     }
   };
   

@@ -45,7 +45,7 @@ export function AppSidebar() {
 
   return (
     <Sidebar className="border-r border-border/20">
-      <SidebarHeader className="p-4">
+      <SidebarHeader className="p-4 hidden md:flex">
         <Link href="/" className="flex items-center gap-2">
           <Image src="https://i.imgur.com/mgVlBQj.png" alt="RISE Logo" width={32} height={32} className="w-8 h-8 text-primary glow-primary" />
           <h1 className="text-xl font-headline font-semibold">

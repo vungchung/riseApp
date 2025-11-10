@@ -83,8 +83,8 @@ export default function DashboardPage() {
               <AvatarFallback>{userProfile.name.charAt(0)}</AvatarFallback>
             </Avatar>
             <div className="text-center sm:text-left">
-              <CardTitle className="font-headline text-2xl sm:text-3xl">{userProfile.name}</CardTitle>
-              <CardDescription className={cn("text-base sm:text-lg", getRankColor(userProfile.rank))}>
+              <CardTitle className="font-headline text-xl sm:text-3xl">{userProfile.name}</CardTitle>
+              <CardDescription className={cn("text-base", getRankColor(userProfile.rank))}>
                 Level {userProfile.level} - {userProfile.rank}-Rank Hunter
               </CardDescription>
             </div>

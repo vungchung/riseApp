@@ -80,10 +80,10 @@ export default function ProfilePage() {
             {userProfile.name.charAt(0)}
           </AvatarFallback>
         </Avatar>
-        <h2 className="text-3xl sm:text-4xl font-headline font-bold">{userProfile.name}</h2>
+        <h2 className="text-2xl sm:text-4xl font-headline font-bold">{userProfile.name}</h2>
         <p
           className={cn(
-            'text-xl sm:text-2xl font-semibold',
+            'text-lg sm:text-2xl font-semibold',
             getRankColor(userProfile.rank)
           )}
         >

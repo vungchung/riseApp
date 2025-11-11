@@ -15,6 +15,7 @@ import type { UserProfile } from '@/lib/types';
 import { useGame } from '@/components/providers/game-provider';
 import QuestsOverview from '@/components/quests-overview';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Skeleton } from '@/components/ui/skeleton';
 
 
 function getRankColor(rank: 'E' | 'D' | 'C' | 'B' | 'A' | 'S') {
@@ -29,8 +30,67 @@ function getRankColor(rank: 'E' | 'D' | 'C' | 'B' | 'A' | 'S') {
   }
 }
 
+function DashboardSkeleton() {
+  return (
+    <div className="container mx-auto p-4 sm:p-6 lg:p-8">
+      <PageHeader
+        title="Dashboard"
+        description="Your journey to become an S-Rank Hunter starts now."
+      />
+      
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <Card className="md:col-span-3">
+          <CardHeader className="flex flex-col sm:flex-row items-center gap-4">
+             <Skeleton className="h-16 w-16 sm:h-20 sm:w-20 rounded-full" />
+            <div className="text-center sm:text-left">
+              <Skeleton className="h-8 w-48 mb-2" />
+              <Skeleton className="h-6 w-32" />
+            </div>
+          </CardHeader>
+          <CardContent>
+            <Skeleton className="h-3 w-full" />
+          </CardContent>
+        </Card>
+      </div>
+
+      <section className="mb-8">
+        <div className="flex justify-between items-center mb-4">
+            <h2 className="text-2xl font-headline">Active Quests</h2>
+            <Button variant="ghost" asChild>
+                <Link href="/quests">
+                    View All
+                </Link>
+            </Button>
+        </div>
+         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <Skeleton className="h-64 w-full" />
+            <Skeleton className="h-64 w-full" />
+            <Skeleton className="h-64 w-full" />
+         </div>
+      </section>
+
+      <section>
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-2xl font-headline">Dungeons</h2>
+            <Button variant="ghost" asChild>
+                <Link href="/dungeons">
+                    View All
+                </Link>
+            </Button>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <Skeleton className="h-48 w-full" />
+          <Skeleton className="h-48 w-full" />
+          <Skeleton className="h-48 w-full" />
+        </div>
+      </section>
+    </div>
+  );
+}
+
+
 export default function DashboardPage() {
-  const { userProfile, quests, updateUserProfile } = useGame();
+  const { userProfile, quests, updateUserProfile, isLoading } = useGame();
   const [isSetupOpen, setIsSetupOpen] = useState(false);
 
   useEffect(() => {
@@ -58,8 +118,8 @@ export default function DashboardPage() {
 
   const workoutImage = PlaceHolderImages.find(img => img.id === 'workout-theme');
 
-  if (!userProfile) {
-    return null; // or a loading spinner
+  if (isLoading || !userProfile) {
+    return <DashboardSkeleton />;
   }
   
   return (

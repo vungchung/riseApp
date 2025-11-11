@@ -28,6 +28,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
+import { Skeleton } from '@/components/ui/skeleton';
 
 function getRankColor(rank: 'E' | 'D' | 'C' | 'B' | 'A' | 'S') {
   switch (rank) {
@@ -48,8 +49,40 @@ function getRankColor(rank: 'E' | 'D' | 'C' | 'B' | 'A' | 'S') {
   }
 }
 
+function ProfilePageSkeleton() {
+  return (
+    <div className="container mx-auto p-4 sm:p-6 lg:p-8">
+      <PageHeader
+        title="Hunter Profile"
+        description="Your identity and achievements in the system."
+      />
+      <div className="flex flex-col items-center text-center mb-8">
+        <Skeleton className="h-24 w-24 sm:h-32 sm:w-32 rounded-full mb-4" />
+        <Skeleton className="h-8 w-48 mb-2" />
+        <Skeleton className="h-6 w-32" />
+      </div>
+
+      <Card className="mb-8">
+        <CardHeader>
+          <CardTitle className="font-headline">System Data</CardTitle>
+          <CardDescription>
+            View and manage your personal data.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-center">
+              <Skeleton className="h-20 w-full" />
+              <Skeleton className="h-20 w-full" />
+              <Skeleton className="h-20 w-full" />
+            </div>
+        </CardContent>
+      </Card>
+    </div>
+  )
+}
+
 export default function ProfilePage() {
-  const { userProfile, updateUserProfile, unlockedBadges, resetGameData } = useGame();
+  const { userProfile, updateUserProfile, unlockedBadges, resetGameData, isLoading } = useGame();
   const [isSetupOpen, setIsSetupOpen] = useState(false);
 
   const handleProfileSave = (data: Partial<UserProfile>) => {
@@ -68,8 +101,8 @@ export default function ProfilePage() {
     return rankAvatars[rank] || rankAvatars['E'];
   }
   
-  if (!userProfile) {
-    return null; // Or a loading spinner
+  if (isLoading || !userProfile) {
+    return <ProfilePageSkeleton />;
   }
 
   const displayedBadges = allBadges.filter(b => unlockedBadges.includes(b.id));

@@ -1,7 +1,7 @@
 'use client';
 import { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import type { UserProfile, Quest, Analytics } from '@/lib/types';
-import { userProfile as initialProfile, MOCK_QUESTS, initialAnalytics } from '@/lib/data';
+import { userProfile as defaultProfile, MOCK_QUESTS, initialAnalytics as defaultAnalytics } from '@/lib/data';
 import { useToast } from '@/hooks/use-toast';
 import { MANDATORY_QUEST_ID } from '@/lib/constants';
 
@@ -17,9 +17,7 @@ interface GameState {
   analytics: Analytics | null;
 }
 
-interface GameContextType extends Omit<GameState, 'userProfile' | 'analytics'> {
-  userProfile: UserProfile | null;
-  analytics: Analytics | null;
+interface GameContextType extends GameState {
   updateUserProfile: (data: Partial<UserProfile>) => void;
   addDailyQuest: (questId: string) => void;
   updateTask: (questId: string, taskIndex: number, completed: boolean) => void;
@@ -65,7 +63,7 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
     const resetMandatoryQuest = { ...mandatoryQuest, tasks: mandatoryQuest.tasks.map(t => ({ ...t, completed: false })) };
     
     return {
-        userProfile: initialProfile,
+        userProfile: defaultProfile,
         quests: [resetMandatoryQuest],
         lastDailyQuestCompletionDate: null,
         activeDungeonId: null,
@@ -73,7 +71,7 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
         dungeonProgress: 0,
         lastDungeonProgressDate: null,
         unlockedBadges: [],
-        analytics: initialAnalytics,
+        analytics: defaultAnalytics,
     };
   };
   
@@ -114,10 +112,9 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
       if (savedStateRaw) {
         let savedState: GameState = JSON.parse(savedStateRaw);
         
-        // Ensure all state fields are present
-        savedState.userProfile = savedState.userProfile || initialProfile;
+        savedState.userProfile = savedState.userProfile || defaultProfile;
         savedState.unlockedBadges = savedState.unlockedBadges || [];
-        savedState.analytics = savedState.analytics || initialAnalytics;
+        savedState.analytics = savedState.analytics || defaultAnalytics;
 
         const newState = resetDailyStates(savedState);
         
@@ -132,7 +129,6 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
         setAnalytics(newState.analytics);
 
       } else {
-        // First time load
         const initialState = getInitialState();
         setUserProfile(initialState.userProfile);
         setQuests(initialState.quests);
@@ -231,10 +227,8 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
       let newQuests: Quest[];
       if (quest.id === MANDATORY_QUEST_ID) {
           setLastDailyQuestCompletionDate(getTodayDateString());
-          // Remove the mandatory quest from the active list for today
           newQuests = quests.filter(q => q.id !== questId);
       } else {
-          // Remove the optional quest from the active list
           newQuests = quests.filter(q => q.id !== questId);
       }
 
@@ -247,6 +241,7 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
   const startDungeon = (id: string) => {
     setActiveDungeonId(id);
     setDungeonProgress(1); // Start at day 1
+    setLastDungeonProgressDate(getTodayDateString());
     toast({ title: "Dungeon Started!", description: "Your long-term challenge begins now."});
   }
   
@@ -258,9 +253,10 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
   const addBadge = useCallback((badgeId: string) => {
     setUnlockedBadges(prev => {
         if (prev.includes(badgeId)) return prev;
-        return [...prev, badgeId];
+        const newBadges = [...prev, badgeId];
+        toast({ title: "Badge Unlocked!", description: "You've earned a new badge for your achievements." });
+        return newBadges;
     });
-    toast({ title: "Badge Unlocked!", description: "You've earned a new badge for your achievements." });
   }, [toast]);
   
   const masterDungeon = (id: string, badgeId: string) => {
@@ -277,6 +273,16 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
   const resetGameData = () => {
     if (isServer) return;
     localStorage.removeItem('gameState');
+    const initialState = getInitialState();
+    setUserProfile(initialState.userProfile);
+    setQuests(initialState.quests);
+    setLastDailyQuestCompletionDate(initialState.lastDailyQuestCompletionDate);
+    setActiveDungeonId(initialState.activeDungeonId);
+    setMasteredDungeons(initialState.masteredDungeons);
+    setDungeonProgress(initialState.dungeonProgress);
+    setLastDungeonProgressDate(initialState.lastDungeonProgressDate);
+    setUnlockedBadges(initialState.unlockedBadges);
+    setAnalytics(initialState.analytics);
     window.location.reload();
   };
 

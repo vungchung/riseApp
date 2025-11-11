@@ -35,11 +35,11 @@ export default function RootLayout({
       >
         <GameProvider>
           <SidebarProvider>
-            <div className="flex min-h-screen">
+            <div className="flex min-h-screen w-full">
                 <AppSidebar />
-                <div className="flex-1 flex flex-col min-w-0">
+                <div className="flex flex-1 flex-col min-w-0">
                     <MobileHeader />
-                    <main className="flex-1 pt-16 md:pt-0">
+                    <main className="flex-1 md:pt-0">
                         {children}
                     </main>
                 </div>

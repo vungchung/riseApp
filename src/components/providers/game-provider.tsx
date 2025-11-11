@@ -108,15 +108,22 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
 
     try {
       const savedStateRaw = localStorage.getItem('gameState');
+      const initialState = getInitialState();
 
       if (savedStateRaw) {
-        let savedState: GameState = JSON.parse(savedStateRaw);
+        const savedState = JSON.parse(savedStateRaw);
         
-        savedState.userProfile = savedState.userProfile || defaultProfile;
-        savedState.unlockedBadges = savedState.unlockedBadges || [];
-        savedState.analytics = savedState.analytics || defaultAnalytics;
-
-        const newState = resetDailyStates(savedState);
+        // Deep merge saved state with initial state to ensure data integrity on updates
+        const mergedState: GameState = {
+            ...initialState,
+            ...savedState,
+            userProfile: { ...initialState.userProfile, ...(savedState.userProfile || {}) },
+            analytics: { ...initialState.analytics, ...(savedState.analytics || {}) },
+            unlockedBadges: savedState.unlockedBadges || [],
+            masteredDungeons: savedState.masteredDungeons || [],
+        };
+        
+        const newState = resetDailyStates(mergedState);
         
         setUserProfile(newState.userProfile);
         setQuests(newState.quests);
@@ -129,7 +136,6 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
         setAnalytics(newState.analytics);
 
       } else {
-        const initialState = getInitialState();
         setUserProfile(initialState.userProfile);
         setQuests(initialState.quests);
         setLastDailyQuestCompletionDate(initialState.lastDailyQuestCompletionDate);
@@ -141,7 +147,7 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
         setAnalytics(initialState.analytics);
       }
     } catch (error) {
-      console.error("Failed to load game state from localStorage", error);
+      console.error("Failed to load or merge game state from localStorage", error);
        const initialState = getInitialState();
         setUserProfile(initialState.userProfile);
         setQuests(initialState.quests);

@@ -12,12 +12,16 @@ import { MANDATORY_QUEST_ID } from "@/lib/constants";
 import { PageHeader } from '@/components/page-header';
 
 function DailyQuestTimer() {
-  const [timeLeft, setTimeLeft] = useState('');
-  const [isClient, setIsClient] = useState(false);
+  const [timeLeft, setTimeLeft] = useState('--:--:--');
+  const [hasMounted, setHasMounted] = useState(false);
 
   useEffect(() => {
-    setIsClient(true);
-    
+    setHasMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (!hasMounted) return;
+
     const calculateTimeLeft = () => {
       const now = new Date();
       const tomorrow = new Date(now);
@@ -33,15 +37,14 @@ function DailyQuestTimer() {
       return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
     };
 
+    setTimeLeft(calculateTimeLeft()); // Set initial value immediately on client
+
     const interval = setInterval(() => {
       setTimeLeft(calculateTimeLeft());
     }, 1000);
 
-    // Set initial value
-    setTimeLeft(calculateTimeLeft());
-
     return () => clearInterval(interval);
-  }, []);
+  }, [hasMounted]);
 
   return (
     <Card className="bg-card/80 border-destructive/50 backdrop-blur-sm text-center py-8 sm:py-12">
@@ -49,15 +52,12 @@ function DailyQuestTimer() {
         <Timer className="w-10 h-10 sm:w-12 sm:h-12 text-destructive mx-auto mb-4"/>
         <h3 className="text-lg sm:text-xl font-headline font-bold text-destructive">Daily Mandate Completed</h3>
         <p className="text-muted-foreground mt-2 text-sm sm:text-base">Your mandatory quest is done for today. It will reset in:</p>
-        {isClient ? (
-          <p className="text-2xl font-mono font-bold text-foreground mt-3">{timeLeft}</p>
-        ) : (
-          <p className="text-2xl font-mono font-bold text-foreground mt-3">--:--:--</p>
-        )}
+        <p className="text-2xl font-mono font-bold text-foreground mt-3">{timeLeft}</p>
       </CardContent>
     </Card>
   );
 }
+
 
 export default function QuestsPage() {
     const { quests, addDailyQuest, lastDailyQuestCompletionDate } = useGame();

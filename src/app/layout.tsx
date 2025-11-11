@@ -38,7 +38,7 @@ export default function RootLayout({
                 <AppSidebar />
               <main className="flex-1 min-w-0">
                 <MobileHeader />
-                <div className="md:p-0 pt-16">
+                <div className="pt-16 md:pt-0">
                   {children}
                 </div>
                 </main>

@@ -48,11 +48,11 @@ function DailyQuestTimer() {
 
   return (
     <Card className="bg-card/80 border-destructive/50 backdrop-blur-sm text-center py-8 sm:py-12">
-      <CardContent className="p-4 pt-4">
+      <CardContent className="p-4 pt-4 sm:p-6 sm:pt-6">
         <Timer className="w-10 h-10 sm:w-12 sm:h-12 text-destructive mx-auto mb-4"/>
         <h3 className="text-lg sm:text-xl font-headline font-bold text-destructive">Daily Mandate Completed</h3>
         <p className="text-muted-foreground mt-2 text-sm sm:text-base">Your mandatory quest is done for today. It will reset in:</p>
-        <p className="text-2xl font-mono font-bold text-foreground mt-3">{timeLeft}</p>
+        <p className="text-2xl sm:text-3xl font-mono font-bold text-foreground mt-3">{timeLeft}</p>
       </CardContent>
     </Card>
   );
@@ -98,7 +98,7 @@ export default function QuestsPage() {
         <p className="text-muted-foreground mb-4">Accept additional daily quests to earn more XP. These reset at the end of the day.</p>
         
         {availableQuests.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
             {availableQuests.map(quest => {
                 const isAdded = activeQuestIds.includes(quest.id);
                 return (
@@ -126,7 +126,7 @@ export default function QuestsPage() {
             </div>
         ) : (
              <Card className="bg-card/80 border-primary/20 backdrop-blur-sm text-center py-12">
-                 <CardContent className="p-4 pt-4">
+                 <CardContent className="p-4 pt-4 sm:p-6 sm:pt-6">
                     <CheckCircle2 className="w-10 h-10 sm:w-12 sm:h-12 text-accent mx-auto mb-4"/>
                     <h3 className="text-lg sm:text-xl font-headline font-bold">Quest Board Cleared!</h3>
                     <p className="text-muted-foreground mt-2 text-sm sm:text-base">You've accepted all available quests for today. Check back tomorrow for more!</p>

@@ -129,7 +129,7 @@ function DungeonCard({
 
   return (
     <Card className="flex flex-col overflow-hidden transition-all duration-300 hover:border-primary/50">
-      <div className="relative h-48 w-full">
+      <div className="relative h-40 sm:h-48 w-full">
         {dungeonImage && (
           <Image
             src={dungeonImage.imageUrl}
@@ -142,8 +142,8 @@ function DungeonCard({
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent" />
       </div>
       <CardHeader>
-        <CardTitle className="font-headline text-xl">{dungeon.title}</CardTitle>
-        <div className="flex gap-2">
+        <CardTitle className="font-headline text-lg sm:text-xl">{dungeon.title}</CardTitle>
+        <div className="flex flex-wrap gap-2">
           <Badge variant={variant} className="gap-1.5">
             <Icon className="h-3.5 w-3.5" />
             {dungeon.difficulty}
@@ -158,7 +158,7 @@ function DungeonCard({
                 <div>
                   <p className='text-sm text-muted-foreground mb-1'>Today's Task:</p>
                   <div className='flex items-center gap-2 p-3 rounded-md bg-muted/50'>
-                    <Dumbbell className='w-4 h-4 text-accent'/>
+                    <Dumbbell className='w-4 h-4 text-accent flex-shrink-0'/>
                     <p className='font-mono text-sm font-semibold'>{dailyWorkout}</p>
                   </div>
                 </div>
@@ -204,7 +204,7 @@ export default function DungeonsPage() {
     <div className="space-y-8">
         <div>
             <h2 className="text-2xl font-headline mb-4">Mastery Programs</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
                 {masteryPrograms.map((dungeon) => (
                     <DungeonCard 
                         key={dungeon.id} 
@@ -218,7 +218,7 @@ export default function DungeonsPage() {
         </div>
         <div>
             <h2 className="text-2xl font-headline mb-4">Transformation Programs</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
                 {transformationPrograms.map((dungeon) => (
                      <DungeonCard 
                         key={dungeon.id} 

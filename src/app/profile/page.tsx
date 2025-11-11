@@ -164,7 +164,7 @@ export default function ProfilePage() {
                 <p className="text-lg sm:text-xl font-semibold capitalize">{userProfile.gender || 'N/A'}</p>
               </div>
             </div>
-          <p className="text-sm text-muted-foreground my-4">
+          <p className="text-xs text-muted-foreground my-4 text-center sm:text-left">
             All your progress is stored securely on this device. You can export
             your data to create a backup.
           </p>
@@ -188,7 +188,7 @@ export default function ProfilePage() {
                   <Icon className="h-8 w-8 sm:h-10 sm:w-10 text-accent glow-accent" />
                 </div>
                 <p className="font-semibold text-sm sm:text-base">{name}</p>
-                <p className="text-xs text-muted-foreground">{description}</p>
+                <p className="text-xs text-muted-foreground mt-1">{description}</p>
               </Card>
             ))}
           </div>

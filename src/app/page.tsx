@@ -143,8 +143,8 @@ export default function DashboardPage() {
               <AvatarFallback>{userProfile.name.charAt(0)}</AvatarFallback>
             </Avatar>
             <div className="text-center sm:text-left">
-              <CardTitle className="font-headline text-xl sm:text-3xl">{userProfile.name}</CardTitle>
-              <CardDescription className={cn("text-base sm:text-lg", getRankColor(userProfile.rank))}>
+              <CardTitle className="font-headline text-2xl sm:text-3xl">{userProfile.name}</CardTitle>
+              <CardDescription className={cn("text-lg sm:text-xl", getRankColor(userProfile.rank))}>
                 Level {userProfile.level} - {userProfile.rank}-Rank Hunter
               </CardDescription>
             </div>
@@ -179,13 +179,13 @@ export default function DashboardPage() {
                 </Link>
             </Button>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
           {dungeons.slice(0,3).map((dungeon) => {
             const dungeonImage = PlaceHolderImages.find(img => img.id.includes(dungeon.difficulty.toLowerCase()));
             return (
               <Card key={dungeon.id} className="overflow-hidden transform hover:scale-105 transition-transform duration-300">
                 <Link href="/dungeons">
-                  <div className="relative h-48 w-full">
+                  <div className="relative h-40 sm:h-48 w-full">
                      {dungeonImage && <Image
                       src={dungeonImage.imageUrl}
                       alt={dungeon.title}
@@ -195,7 +195,7 @@ export default function DashboardPage() {
                     />}
                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent" />
                     <div className="absolute bottom-0 left-0 p-4">
-                      <h3 className="font-headline text-xl text-white">{dungeon.title}</h3>
+                      <h3 className="font-headline text-lg sm:text-xl text-white">{dungeon.title}</h3>
                       <p className="text-sm text-accent">{dungeon.difficulty}</p>
                     </div>
                   </div>

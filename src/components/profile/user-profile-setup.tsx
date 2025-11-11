@@ -1,6 +1,7 @@
 
 'use client';
 
+import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -66,17 +67,18 @@ export function UserProfileSetup({
       gender: userProfile.gender || undefined,
     },
   });
-  
+
   // When the dialog opens, reset the form with the latest userProfile data
-  if (open) {
+  useEffect(() => {
+    if (open) {
       form.reset({
         name: userProfile.name,
         height: userProfile.height || undefined,
         weight: userProfile.weight || undefined,
         gender: userProfile.gender || undefined,
-      })
-  }
-
+      });
+    }
+  }, [open, userProfile, form]);
 
   const onSubmit = (data: ProfileFormValues) => {
     onSave(data);

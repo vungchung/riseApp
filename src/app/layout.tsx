@@ -36,13 +36,15 @@ export default function RootLayout({
         <GameProvider>
           <SidebarProvider>
             <div className="flex min-h-screen w-full">
-                <AppSidebar />
-                <div className="flex flex-1 flex-col min-w-0">
-                    <MobileHeader />
-                    <main className="flex-1 md:pt-0">
+              <AppSidebar />
+              <div className="flex flex-1 flex-col min-w-0">
+                <MobileHeader />
+                <main className="flex-1 flex flex-col pt-16 md:pt-0">
+                    <div className="flex-1 w-full">
                         {children}
-                    </main>
-                </div>
+                    </div>
+                </main>
+              </div>
             </div>
           </SidebarProvider>
         </GameProvider>

@@ -10,6 +10,22 @@ export const userProfile: UserProfile = {
   xpToNextLevel: 200,
 };
 
+export const initialAnalytics: Analytics = {
+    totalWorkouts: 0,
+    currentStreak: 0,
+    hoursTrained: 0,
+    weeklyActivity: [
+        { day: 'Mon', workouts: 0 },
+        { day: 'Tue', workouts: 0 },
+        { day: 'Wed', workouts: 0 },
+        { day: 'Thu', workouts: 0 },
+        { day: 'Fri', workouts: 0 },
+        { day: 'Sat', workouts: 0 },
+        { day: 'Sun', workouts: 0 },
+    ],
+    personalRecords: []
+};
+
 export const MOCK_QUESTS: Quest[] = [
     {
       id: MANDATORY_QUEST_ID,
@@ -153,23 +169,3 @@ export const badges: Badge[] = [
     { id: 'rank-c', name: 'C-Rank Hunter', description: 'Achieved the rank of C.', Icon: Award },
     { id: 'level-50', name: 'Level 50', description: 'Reached level 50.', Icon: Crown },
 ];
-
-export const analytics: Analytics = {
-    totalWorkouts: 42,
-    currentStreak: 12,
-    hoursTrained: 31.5,
-    weeklyActivity: [
-        { day: 'Mon', workouts: 1 },
-        { day: 'Tue', workouts: 2 },
-        { day: 'Wed', workouts: 1 },
-        { day: 'Thu', workouts: 2 },
-        { day: 'Fri', workouts: 1 },
-        { day: 'Sat', workouts: 3 },
-        { day: 'Sun', workouts: 0 },
-    ],
-    personalRecords: [
-        { exercise: 'Push-ups', value: '50 reps' },
-        { exercise: 'Longest Run', value: '15 km' },
-        { exercise: 'Plank', value: '3 min 20s' },
-    ]
-};

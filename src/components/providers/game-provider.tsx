@@ -1,7 +1,7 @@
 'use client';
 import { createContext, useContext, useState, useEffect, useCallback } from 'react';
-import type { UserProfile, Quest } from '@/lib/types';
-import { userProfile as initialProfile, MOCK_QUESTS } from '@/lib/data';
+import type { UserProfile, Quest, Analytics } from '@/lib/types';
+import { userProfile as initialProfile, MOCK_QUESTS, initialAnalytics } from '@/lib/data';
 import { useToast } from '@/hooks/use-toast';
 import { MANDATORY_QUEST_ID } from '@/lib/constants';
 
@@ -14,10 +14,12 @@ interface GameState {
   dungeonProgress: number;
   lastDungeonProgressDate: string | null;
   unlockedBadges: string[];
+  analytics: Analytics | null;
 }
 
-interface GameContextType extends Omit<GameState, 'userProfile'> {
+interface GameContextType extends Omit<GameState, 'userProfile' | 'analytics'> {
   userProfile: UserProfile | null;
+  analytics: Analytics | null;
   updateUserProfile: (data: Partial<UserProfile>) => void;
   addDailyQuest: (questId: string) => void;
   updateTask: (questId: string, taskIndex: number, completed: boolean) => void;
@@ -51,6 +53,9 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
 
   // Badges State
   const [unlockedBadges, setUnlockedBadges] = useState<string[]>([]);
+  
+  // Analytics State
+  const [analytics, setAnalytics] = useState<Analytics | null>(null);
 
   const [isLoading, setIsLoading] = useState(true);
   const { toast } = useToast();
@@ -68,6 +73,7 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
         dungeonProgress: 0,
         lastDungeonProgressDate: null,
         unlockedBadges: [],
+        analytics: initialAnalytics,
     };
   };
   
@@ -111,6 +117,7 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
         // Ensure all state fields are present
         savedState.userProfile = savedState.userProfile || initialProfile;
         savedState.unlockedBadges = savedState.unlockedBadges || [];
+        savedState.analytics = savedState.analytics || initialAnalytics;
 
         const newState = resetDailyStates(savedState);
         
@@ -122,6 +129,7 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
         setDungeonProgress(newState.dungeonProgress);
         setLastDungeonProgressDate(newState.lastDungeonProgressDate);
         setUnlockedBadges(newState.unlockedBadges);
+        setAnalytics(newState.analytics);
 
       } else {
         // First time load
@@ -134,6 +142,7 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
         setDungeonProgress(initialState.dungeonProgress);
         setLastDungeonProgressDate(initialState.lastDungeonProgressDate);
         setUnlockedBadges(initialState.unlockedBadges);
+        setAnalytics(initialState.analytics);
       }
     } catch (error) {
       console.error("Failed to load game state from localStorage", error);
@@ -146,6 +155,7 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
         setDungeonProgress(initialState.dungeonProgress);
         setLastDungeonProgressDate(initialState.lastDungeonProgressDate);
         setUnlockedBadges(initialState.unlockedBadges);
+        setAnalytics(initialState.analytics);
     } finally {
       setIsLoading(false);
     }
@@ -161,11 +171,12 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
           masteredDungeons,
           dungeonProgress,
           lastDungeonProgressDate,
-          unlockedBadges
+          unlockedBadges,
+          analytics,
         };
         localStorage.setItem('gameState', JSON.stringify(gameState));
     }
-  }, [userProfile, quests, lastDailyQuestCompletionDate, isLoading, activeDungeonId, masteredDungeons, dungeonProgress, lastDungeonProgressDate, unlockedBadges]);
+  }, [userProfile, quests, lastDailyQuestCompletionDate, isLoading, activeDungeonId, masteredDungeons, dungeonProgress, lastDungeonProgressDate, unlockedBadges, analytics]);
 
   const updateUserProfile = (data: Partial<UserProfile>) => {
     setUserProfile(prevProfile => {
@@ -280,6 +291,7 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
       dungeonProgress,
       lastDungeonProgressDate,
       unlockedBadges,
+      analytics,
       updateUserProfile, 
       addDailyQuest, 
       updateTask, 

@@ -1,8 +1,11 @@
+'use client';
+
 import { PageHeader } from '@/components/page-header';
-import { analytics, userProfile } from '@/lib/data';
 import { BarChart3, Clock, TrendingUp, Trophy } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { WorkoutChart } from '@/components/analytics/workout-chart';
+import { useGame } from '@/components/providers/game-provider';
+import { Skeleton } from '@/components/ui/skeleton';
 
 const StatCard = ({
   icon: Icon,
@@ -24,7 +27,47 @@ const StatCard = ({
   </Card>
 );
 
+const StatCardSkeleton = () => (
+    <Card>
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <Skeleton className='h-5 w-24' />
+            <Skeleton className='h-4 w-4' />
+        </CardHeader>
+        <CardContent>
+            <Skeleton className='h-8 w-16' />
+        </CardContent>
+    </Card>
+)
+
 export default function AnalyticsPage() {
+  const { userProfile, analytics, isLoading } = useGame();
+
+  if (isLoading || !userProfile || !analytics) {
+    return (
+       <div className="container mx-auto p-4 sm:p-6 lg:p-8">
+        <PageHeader
+            title="Analytics"
+            description="Review your combat records."
+        />
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 mb-8">
+            <StatCardSkeleton />
+            <StatCardSkeleton />
+            <StatCardSkeleton />
+        </div>
+         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <Card className="lg:col-span-2">
+                <CardHeader>
+                    <CardTitle className="font-headline">Weekly Activity</CardTitle>
+                </CardHeader>
+                <CardContent>
+                    <Skeleton className='h-[250px] w-full' />
+                </CardContent>
+            </Card>
+         </div>
+       </div>
+    )
+  }
+
   return (
     <div className="container mx-auto p-4 sm:p-6 lg:p-8">
       <PageHeader
@@ -68,14 +111,18 @@ export default function AnalyticsPage() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <ul className="divide-y divide-border">
-                {analytics.personalRecords.map(record => (
-                    <li key={record.exercise} className="flex justify-between items-center py-3">
-                        <span className="text-muted-foreground">{record.exercise}</span>
-                        <span className="font-mono font-semibold text-lg">{record.value}</span>
-                    </li>
-                ))}
-            </ul>
+            {analytics.personalRecords.length > 0 ? (
+                <ul className="divide-y divide-border">
+                    {analytics.personalRecords.map(record => (
+                        <li key={record.exercise} className="flex justify-between items-center py-3">
+                            <span className="text-muted-foreground">{record.exercise}</span>
+                            <span className="font-mono font-semibold text-lg">{record.value}</span>
+                        </li>
+                    ))}
+                </ul>
+            ) : (
+                <p className='text-muted-foreground text-center py-4'>No personal records set yet. Keep training!</p>
+            )}
           </CardContent>
         </Card>
       </div>

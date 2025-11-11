@@ -1,3 +1,4 @@
+
 import type { Metadata } from 'next';
 import './globals.css';
 import { cn } from '@/lib/utils';
@@ -34,14 +35,14 @@ export default function RootLayout({
       >
         <GameProvider>
           <SidebarProvider>
-            <div className="flex">
+            <div className="flex min-h-screen">
                 <AppSidebar />
-              <main className="flex-1 min-w-0">
-                <MobileHeader />
-                <div className="pt-16 md:pt-0">
-                  {children}
+                <div className="flex-1 flex flex-col min-w-0">
+                    <MobileHeader />
+                    <main className="flex-1 pt-16 md:pt-0">
+                        {children}
+                    </main>
                 </div>
-                </main>
             </div>
           </SidebarProvider>
         </GameProvider>

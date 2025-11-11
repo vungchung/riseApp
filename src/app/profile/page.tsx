@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState } from 'react';
@@ -178,7 +179,7 @@ export default function ProfilePage() {
       <section className="mb-8">
         <h3 className="text-2xl font-headline mb-4">Unlocked Badges</h3>
         {displayedBadges.length > 0 ? (
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
             {displayedBadges.map(({ id, name, description, Icon }) => (
               <Card
                 key={id}

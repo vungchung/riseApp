@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -38,7 +39,7 @@ function DashboardSkeleton() {
         description="Your journey to become an S-Rank Hunter starts now."
       />
       
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 mb-8">
         <Card className="md:col-span-3">
           <CardHeader className="flex flex-col sm:flex-row items-center gap-4">
              <Skeleton className="h-16 w-16 sm:h-20 sm:w-20 rounded-full" />
@@ -62,7 +63,7 @@ function DashboardSkeleton() {
                 </Link>
             </Button>
         </div>
-         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
             <Skeleton className="h-64 w-full" />
             <Skeleton className="h-64 w-full" />
             <Skeleton className="h-64 w-full" />
@@ -78,7 +79,7 @@ function DashboardSkeleton() {
                 </Link>
             </Button>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
           <Skeleton className="h-48 w-full" />
           <Skeleton className="h-48 w-full" />
           <Skeleton className="h-48 w-full" />
@@ -95,10 +96,10 @@ export default function DashboardPage() {
 
   useEffect(() => {
     // Only open the setup if the profile is loaded and data is missing.
-    if (userProfile && (!userProfile.height || !userProfile.weight || !userProfile.gender)) {
+    if (!isLoading && userProfile && (!userProfile.height || !userProfile.weight || !userProfile.gender)) {
         setIsSetupOpen(true);
     }
-  }, [userProfile]);
+  }, [isLoading, userProfile]);
 
   const handleProfileSave = (data: Partial<UserProfile>) => {
     updateUserProfile(data);
@@ -135,7 +136,7 @@ export default function DashboardPage() {
         description="Your journey to become an S-Rank Hunter starts now."
       />
       
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 mb-8">
         <Card className="md:col-span-3 bg-card/50 backdrop-blur-sm">
           <CardHeader className="flex flex-col sm:flex-row items-center gap-4">
             <Avatar className="h-16 w-16 sm:h-20 sm:w-20 border-2 border-primary glow-primary">

@@ -12,11 +12,22 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Download, Edit } from 'lucide-react';
+import { Download, Edit, Trash2, AlertTriangle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { UserProfileSetup } from '@/components/profile/user-profile-setup';
 import type { UserProfile } from '@/lib/types';
 import { useGame } from '@/components/providers/game-provider';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
 
 function getRankColor(rank: 'E' | 'D' | 'C' | 'B' | 'A' | 'S') {
   switch (rank) {
@@ -38,7 +49,7 @@ function getRankColor(rank: 'E' | 'D' | 'C' | 'B' | 'A' | 'S') {
 }
 
 export default function ProfilePage() {
-  const { userProfile, updateUserProfile, unlockedBadges } = useGame();
+  const { userProfile, updateUserProfile, unlockedBadges, resetGameData } = useGame();
   const [isSetupOpen, setIsSetupOpen] = useState(false);
 
   const handleProfileSave = (data: Partial<UserProfile>) => {
@@ -131,7 +142,7 @@ export default function ProfilePage() {
         </CardContent>
       </Card>
 
-      <section>
+      <section className="mb-8">
         <h3 className="text-2xl font-headline mb-4">Unlocked Badges</h3>
         {displayedBadges.length > 0 ? (
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
@@ -157,6 +168,42 @@ export default function ProfilePage() {
           </Card>
         )}
       </section>
+
+      <Card className="border-destructive/50">
+        <CardHeader>
+          <CardTitle className="font-headline text-destructive flex items-center gap-2">
+            <AlertTriangle />
+            Danger Zone
+          </CardTitle>
+          <CardDescription>
+            These actions are permanent and cannot be undone.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button variant="destructive">
+                <Trash2 className="mr-2" />
+                Reset All Data
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  This action cannot be undone. This will permanently delete all your progress, including your level, quests, dungeons, and badges.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction onClick={resetGameData}>
+                  Confirm Reset
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+        </CardContent>
+      </Card>
     </div>
   );
 }

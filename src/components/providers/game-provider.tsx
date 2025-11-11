@@ -26,6 +26,7 @@ interface GameContextType extends Omit<GameState, 'userProfile'> {
   progressDungeon: () => void;
   masterDungeon: (id: string, badgeId: string) => void;
   isLoading: boolean;
+  resetGameData: () => void;
 }
 
 const GameContext = createContext<GameContextType | undefined>(undefined);
@@ -53,6 +54,22 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
 
   const [isLoading, setIsLoading] = useState(true);
   const { toast } = useToast();
+
+  const getInitialState = (): GameState => {
+    const mandatoryQuest = MOCK_QUESTS.find(q => q.id === MANDATORY_QUEST_ID)!;
+    const resetMandatoryQuest = { ...mandatoryQuest, tasks: mandatoryQuest.tasks.map(t => ({ ...t, completed: false })) };
+    
+    return {
+        userProfile: initialProfile,
+        quests: [resetMandatoryQuest],
+        lastDailyQuestCompletionDate: null,
+        activeDungeonId: null,
+        masteredDungeons: [],
+        dungeonProgress: 0,
+        lastDungeonProgressDate: null,
+        unlockedBadges: [],
+    };
+  };
   
   const resetDailyStates = useCallback((state: GameState): GameState => {
     const today = getTodayDateString();
@@ -87,12 +104,12 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
 
     try {
       const savedStateRaw = localStorage.getItem('gameState');
-      const mandatoryQuest = MOCK_QUESTS.find(q => q.id === MANDATORY_QUEST_ID)!;
 
       if (savedStateRaw) {
         let savedState: GameState = JSON.parse(savedStateRaw);
         
         // Ensure all state fields are present
+        savedState.userProfile = savedState.userProfile || initialProfile;
         savedState.unlockedBadges = savedState.unlockedBadges || [];
 
         const newState = resetDailyStates(savedState);
@@ -108,24 +125,27 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
 
       } else {
         // First time load
-        setUserProfile(initialProfile);
-        const resetMandatoryQuest = { ...mandatoryQuest, tasks: mandatoryQuest.tasks.map(t => ({ ...t, completed: false })) };
-        setQuests([resetMandatoryQuest]);
-        setLastDailyQuestCompletionDate(null);
-        setActiveDungeonId(null);
-        setMasteredDungeons([]);
-        setDungeonProgress(0);
-        setLastDungeonProgressDate(null);
-        setUnlockedBadges([]);
+        const initialState = getInitialState();
+        setUserProfile(initialState.userProfile);
+        setQuests(initialState.quests);
+        setLastDailyQuestCompletionDate(initialState.lastDailyQuestCompletionDate);
+        setActiveDungeonId(initialState.activeDungeonId);
+        setMasteredDungeons(initialState.masteredDungeons);
+        setDungeonProgress(initialState.dungeonProgress);
+        setLastDungeonProgressDate(initialState.lastDungeonProgressDate);
+        setUnlockedBadges(initialState.unlockedBadges);
       }
     } catch (error) {
       console.error("Failed to load game state from localStorage", error);
-      setUserProfile(initialProfile);
-      const mandatoryQuest = MOCK_QUESTS.find(q => q.id === MANDATORY_QUEST_ID);
-      if (mandatoryQuest) {
-        const resetMandatoryQuest = { ...mandatoryQuest, tasks: mandatoryQuest.tasks.map(t => ({ ...t, completed: false })) };
-        setQuests([resetMandatoryQuest]);
-      }
+       const initialState = getInitialState();
+        setUserProfile(initialState.userProfile);
+        setQuests(initialState.quests);
+        setLastDailyQuestCompletionDate(initialState.lastDailyQuestCompletionDate);
+        setActiveDungeonId(initialState.activeDungeonId);
+        setMasteredDungeons(initialState.masteredDungeons);
+        setDungeonProgress(initialState.dungeonProgress);
+        setLastDungeonProgressDate(initialState.lastDungeonProgressDate);
+        setUnlockedBadges(initialState.unlockedBadges);
     } finally {
       setIsLoading(false);
     }
@@ -243,6 +263,12 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
     }
   }
 
+  const resetGameData = () => {
+    if (isServer) return;
+    localStorage.removeItem('gameState');
+    window.location.reload();
+  };
+
 
   return (
     <GameContext.Provider value={{ 
@@ -261,7 +287,8 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
       startDungeon,
       progressDungeon,
       masterDungeon,
-      isLoading 
+      isLoading,
+      resetGameData
       }}>
       {children}
     </GameContext.Provider>
